@@ -67,16 +67,65 @@ def juego_bien_formado(j : Juego) -> bool:
 #### Ejercicio 2
 
 def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
-    raise Exception("No implementado")
+    """
+    Devuelve el valor de la nueva posición a partir de la dirección en la que se mueve la figura.
+    PRE: True.
+    ARGS: 
+        pos (Posición): La posición original. 
+        d (Dirección): La dirección hacia la que se mueve.
+    Returns: 
+        La posición vecina de la posición original en la dirección elegida.
+    """
+    res: Posicion = Posicion(pos.fila, pos.columna)
+    if d == NORTE:
+        res = Posicion(pos.fila + 1,pos.columna)
+    elif d == SUR:
+        res = Posicion(pos.fila - 1,pos.columna)
+    elif d == ESTE:
+        res = Posicion(pos.fila,pos.columna + 1)
+    elif d == OESTE:
+        res = Posicion(pos.fila,pos.columna - 1)
 
-def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
-    raise Exception("No implementado")
+    return res
 
-def hay_casilla_vacia(t : Tablero, pos : Posicion) -> bool:
-    raise Exception("No implementado")
+def casilla_en_posicion(t: Tablero, p: Posicion) -> Casilla:
+    """
+    Devuelve la casilla del tablero t que está ubicada en la posición pos.
+    PRE: tableroBienFormado (t) ∧ posiciónEnTablero(pos).
+    ARGS: 
+        t (Tablero): El tablero que se desea verificar.
+        p (Posición): La posición original.
+    Returns: 
+        VACÍA si la casilla en esa posición es un espacio vacío o una pieza si está ocupada.
+    """
+    res: Casilla = t[p.fila][p.columna]
+    return res
+
+def hay_casilla_vacia(t: Tablero, pos: Posicion) -> bool:
+    """
+    Verifica si la casilla que está en la posición pos está vacía.
+    PRE: tableroBienFormado (t) ∧ posiciónEnTablero(pos).
+    ARGS: 
+        t (Tablero): El tablero que se desea verificar.
+        pos (Posición): La posición original.
+    Returns:
+        True si la casilla en esa posición es un espacio vacío y False si no lo es.
+    """
+    return casilla_en_posicion(t,pos) == VACIA
 
 def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
-    raise Exception("No implementado")
+    """
+    Verifica si la casilla que está en la posición pos tiene una figura de color col.
+    PRE: tableroBienFormado (t) ∧ posiciónEnTablero(pos).
+    ARGS: 
+        t (Tablero): El tablero que se desea verificar.
+        pos (Posición): La posición original.
+        col (Color): El color de la figura que está en casilla de esa posición.
+    Returns:
+            True si la casilla en esa posición tiene una figura del color col y False si está vacía o es de otro color que col.
+        """
+    casilla: Casilla = casilla_en_posicion (t,pos)
+    return casilla != VACIA and casilla.color == col
 
 #### Ejercicio 3
 

@@ -142,10 +142,37 @@ class test_posicion_vecina_hacia(unittest.TestCase):
     def test_vecina_al_norte(self):
         self.assertEqual(posicion_vecina_hacia(Posicion(0, 0), NORTE), Posicion(1, 0))
 
+    def test_vecina_al_sur(self):
+            self.assertEqual(posicion_vecina_hacia(Posicion(1, 0), SUR), Posicion(0, 0))
+
+    def test_vecina_al_este(self):
+            self.assertEqual(posicion_vecina_hacia(Posicion(0, 0), ESTE), Posicion(0, 1))
+
+    def test_vecina_al_oeste(self):
+            self.assertEqual(posicion_vecina_hacia(Posicion(0, 1), OESTE), Posicion(0, 0))
+
 class test_son_posiciones_vecinas(unittest.TestCase):
 
     def test_vecinas(self):
         self.assertTrue(son_posiciones_vecinas(Posicion(0, 0), Posicion(1, 0)))
+
+    def test_vecinas_abajo(self):
+        self.assertTrue(son_posiciones_vecinas(Posicion(1, 0), Posicion(0, 0)))
+    
+    def test_vecinas_derecha(self):
+        self.assertTrue(son_posiciones_vecinas(Posicion(0, 0), Posicion(0, 1)))
+    
+    def test_vecinas_izquierda(self):
+        self.assertTrue(son_posiciones_vecinas(Posicion(0, 1), Posicion(0, 0)))
+        
+    def test_vecinas_False(self):
+        self.assertFalse(son_posiciones_vecinas(Posicion(0, 0), Posicion(2, 0)))
+
+    def test_no_son_vecinas_en_diagonal(self):
+        self.assertFalse(son_posiciones_vecinas(Posicion(0, 0), Posicion(1, 1)))
+
+    def test_misma_posicion(self):
+        self.assertFalse(son_posiciones_vecinas(Posicion(0, 0), Posicion(0, 0)))
 
 class test_casilla_en_posicion(unittest.TestCase):
 
@@ -153,17 +180,40 @@ class test_casilla_en_posicion(unittest.TestCase):
         t = tablero_8x8_inicial_ejemplo()
         self.assertEqual(casilla_en_posicion(t, Posicion(0, 0)), Pieza(CABALLO, DORADO))
 
+    def test_casilla_en_posicion_plateado(self):
+            t = tablero_8x8_inicial_ejemplo()
+            self.assertEqual(casilla_en_posicion(t, Posicion(7, 0)), Pieza(CABALLO, PLATEADO))
+
+    def test_casilla_en_posicion_vacía(self):
+            t = tablero_8x8_inicial_ejemplo()
+            self.assertEqual(casilla_en_posicion(t, Posicion(2, 0)), VACIA)
+    
 class test_hay_casilla_vacia(unittest.TestCase):
 
     def test_casilla_vacia(self):
         t = tablero_8x8_inicial_ejemplo()
         self.assertTrue(hay_casilla_vacia(t, Posicion(2, 1)))
 
+    def test_casilla_no_vacia(self):
+            t = tablero_8x8_inicial_ejemplo()
+            self.assertFalse(hay_casilla_vacia(t, Posicion(0, 0)))
+
 class test_hay_pieza_de_color(unittest.TestCase):
 
     def test_hay_pieza_de_color_ok(self):
         t = tablero_8x8_inicial_ejemplo()
         self.assertTrue(hay_pieza_de_color(t, Posicion(1, 4), DORADO))
+
+    def test_hay_pieza_de_color_False(self):
+            t = tablero_8x8_inicial_ejemplo()
+            self.assertFalse(hay_pieza_de_color(t, Posicion(1, 4), PLATEADO))
+
+    def test_hay_pieza_de_color_Vacía(self):
+            t = tablero_8x8_inicial_ejemplo()
+            self.assertFalse(hay_pieza_de_color(t, Posicion(2, 0), DORADO))
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
 
 #### Ejercicio 3
 
