@@ -23,16 +23,46 @@ def pasar_turno(j : Juego) -> Juego: # pragma: no cover
 #### Ejercicio 1
 
 def tablero_bien_formado(t : Tablero) -> bool:
-    raise Exception("No implementado")
+    ''' Verifica que el tablero t sea válido. 
+    PRE: True.
+    ARGS: t (Tablero): El tablero que se desea verificar.
+    Returns: True si el tablero es valido, False si no lo es.
+    '''
+    validez: bool = True 
+    for fila in t: 
+        if len(fila) != ANCHO:
+            return False
+    return validez and len(t) == ALTO
 
 def posicion_en_tablero(pos : Posicion) -> bool:
-    raise Exception("No implementado")
-
+    ''' Verifica que la posicion sea efectivamente una del tablero. 
+        PRE: True.
+        ARGS: pos (Posicion): La posicion que se desea verificar.
+        Returns: True si es una posicion valida, False si no lo es.
+        '''
+    return (0 <= pos.fila <= ALTO) and (0 <= pos.columna <= ANCHO)
+    
 def movimiento_bien_formado(m : Movimiento) -> bool:
-    raise Exception("No implementado")
+    ''' Verifica que el movimiento a realizar este bien formado. 
+    PRE: True.
+    ARGS: m (Movimiento): El movimiento que se desea verificar.
+    Returns: True si es un movimiento valido, False si no lo es.
+    '''
+    if m.accion == MOVER_A_SECAS:
+        pasos_correctos: bool = len(m.pasos) == 1 
+    elif m.accion in (ARRASTRAR,EMPUJAR):
+        pasos_correctos = len(m.pasos) == 2
+    else:
+        pasos_correctos = False
+    return pasos_correctos and posicion_en_tablero(m.origen)
 
 def juego_bien_formado(j : Juego) -> bool:
-    raise Exception("No implementado")
+    ''' Verifica que juego este bien formado. 
+    PRE: True.
+    ARGS: j (Juego): El juego que se desea verificar.
+    Returns: True si es un juego valido, False si no lo es.
+    '''
+    return tablero_bien_formado(j.tablero) and (0 <= j.pasos_consumidos <= MAX_PASOS)
 
 #### Ejercicio 2
 
