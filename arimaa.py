@@ -84,7 +84,7 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     elif d == ESTE:
         res = Posicion(pos.fila,pos.columna + 1)
     elif d == OESTE:
-        res = Posicion(pos.fila,pos.columna - 1)
+        res = Posicion(pos.fila,pos.columna - 1) 
 
     return res
 
@@ -123,20 +123,49 @@ def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
         col (Color): El color de la figura que está en casilla de esa posición.
     Returns:
             True si la casilla en esa posición tiene una figura del color col y False si está vacía o es de otro color que col.
-        """
-    casilla: Casilla = casilla_en_posicion (t,pos)
+    """
+    casilla: Casilla = casilla_en_posicion(t,pos)
     return casilla != VACIA and casilla.color == col
 
 #### Ejercicio 3
 
 def hay_casilla_vacia_hacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
-    raise Exception("No implementado")
+    """
+    Determina si la casilla en la direccion d, respecto de la posicion pos es vacia o no.
+    PRE: tablero_bien_formado(t) ∧ posiciónEnTablero(pos).
+    ARGS: 
+        t (Tablero): El tablero actual.
+        pos (Posición): Posicion a verificar si existen casillas vacias en alguna direccion. 
+        d (Dirección): La direccion a verificar.
+    Returns: 
+        True si la casilla en la direccion d, respecto de la posicion pos, esta vacia. False de lo contrario.
+    """
+    res: bool = False
+    pos_prima: Posicion = posicion_vecina_hacia(pos,d)
+    if posicion_en_tablero(pos_prima):
+        res = hay_casilla_vacia(t,pos_prima)
+    return res
+
+def hay_pieza(t : Tablero,pos : Posicion) -> bool:
+    """
+    Determina si en la posicion pos del tablero t hay una figura, sea esta DORADA o PLATEADA
+    PRE: 
+        tablero_bien_formado(t) ∧ posiciónEnTablero(pos).
+    ARGS: 
+        t (Tablero): El tablero actual.
+        pos (Posición): Posicion a verificar si hay pieza. 
+    Returns: 
+        True si es que hay una figura dorada o plateada. False de lo contrario
+    """
+    return hay_pieza_de_color(t,pos,DORADO) | hay_pieza_de_color(t,pos,PLATEADO)
+
 
 def hay_pieza_amiga_vecina(t : Tablero, pos : Posicion) -> bool:
     raise Exception("No implementado")
 
 def hay_pieza_enemiga_mas_debil_hacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
     raise Exception("No implementado")
+
 
 def hay_pieza_enemiga_mas_fuerte_vecina(t : Tablero, pos : Posicion) -> bool:
     raise Exception("No implementado")

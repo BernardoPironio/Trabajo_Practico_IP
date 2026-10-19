@@ -212,8 +212,6 @@ class test_hay_pieza_de_color(unittest.TestCase):
             t = tablero_8x8_inicial_ejemplo()
             self.assertFalse(hay_pieza_de_color(t, Posicion(2, 0), DORADO))
 
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
 
 #### Ejercicio 3
 
@@ -233,6 +231,82 @@ class test_hay_casilla_vacia_hacia(unittest.TestCase):
             ])
         self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(0, 0), NORTE))
 
+    def test_no_hay_casilla_vacia_hacia(self):
+        t = leer_tablero([
+              '-r----rr', #7
+              '-mrh----', #6
+              '-r---r--', #5
+              'd-EH---c', #4
+              '-M--hD-d', #3
+              '-R-e----', #2
+              '---H-R-C', #1
+              'R-R---RR', #0
+              #01234567
+            ])
+        self.assertFalse(hay_casilla_vacia_hacia(t, Posicion(1, 3), NORTE))
+
+    def test_no_hay_casilla_hacia(self):
+        t = leer_tablero([
+              '-r----rr', #7
+              '-mrh----', #6
+              '-r---r--', #5
+              'd-EH---c', #4
+              '-M--hD-d', #3
+              '-R-e----', #2
+              '---H-R-C', #1
+              'R-R---RR', #0
+              #01234567
+            ])
+        self.assertFalse(hay_casilla_vacia_hacia(t, Posicion(8, 3), NORTE))
+
+class test_hay_pieza(unittest.TestCase):
+
+    def test_hay_pieza_dorada(self):
+        t = leer_tablero([
+              'R-hRD-Rr', #7
+              'M----d--', #6
+              '-h-rrCR-', #5
+              'R-rcE---', #4
+              '--drRR--', #3
+              '-HD-H--m', #2
+              '--r-RCc-', #1
+              're---r--', #0
+              #01234567
+            ])
+        self.assertTrue(hay_pieza(t,Posicion(0,0)))
+
+    def test_hay_pieza_plateada(self):
+
+        t = leer_tablero([
+              'R-hRD-Rr', #7
+              'M----d--', #6
+              '-h-rrCR-', #5
+              'R-rcE---', #4
+              '--drRR--', #3
+              '-HD-H--m', #2
+              '--r-RCc-', #1
+              're---r--', #0
+              #01234567
+            ])
+        self.assertTrue(hay_pieza(t,Posicion(7,0)))
+
+    def test_no_hay_pieza(self):
+        t = leer_tablero([
+              'R-hRD-Rr', #7
+              'M----d--', #6
+              '-h-rrCR-', #5
+              'R-rcE---', #4
+              '--drRR--', #3
+              '-HD-H--m', #2
+              '--r-RCc-', #1
+              're---r--', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza(t,Posicion(0,4)))
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
+
 class test_hay_pieza_amiga_vecina(unittest.TestCase):
 
     def test_hay_pieza_amiga_vecina(self):
@@ -248,6 +322,7 @@ class test_hay_pieza_amiga_vecina(unittest.TestCase):
               #01234567
             ])
         self.assertTrue(hay_pieza_amiga_vecina(t, Posicion(4, 3)))
+
 
 class test_hay_pieza_enemiga_mas_debil_hacia(unittest.TestCase):
 
