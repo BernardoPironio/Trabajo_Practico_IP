@@ -427,7 +427,7 @@ class test_activar_trampas(unittest.TestCase):
 
 class test_realizar_movimiento(unittest.TestCase):
  
-    def test_mover_a_secas(self):
+    def test_mover_a_secas_6(self):
         t0 = leer_tablero([
                'rrrrrrrr', #7
                'ccddhh-e', #6

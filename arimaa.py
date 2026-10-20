@@ -282,10 +282,150 @@ def hay_pieza_congelada(t: Tablero, pos: Posicion) -> bool:
 
 
 #### Ejercicio 4
+def hay_figura_de_color(t: Tablero, pos: Posicion, f: Figura, col: Color):
+    """
+    Vamos a determinar si dado el tablero t, la posicion pos es una posicion en el tablero, no hay casilla vacia en la posicion pos, 
+    la figura f coincide con la figura de esa posicion en el tablero y  el color col coincide con el color de esa posicio en ele tablero.
+
+    PRE: tablero_bien_formado(t).
+
+    ARGS:
+        t (Tablero): El tablero actual.
+        pos (Posicion): La posicion a cheaquar si hay una figura de cierto color.
+        f (Figura): Tipo de figura a chequear si esta en la casilla.
+        col (Color): Color a chequear si esta en la casilla.
+
+    Returns:
+        True si hay una figura f de color col en la casilla de la posicion pos(valida en el tablero); False de lo contrario.
+    """    
+    return(
+        posicion_en_tablero(pos)
+        and not hay_casilla_vacia(t,pos)
+        and t[pos.fila][pos.columna].figura == f
+        and t[pos.fila][pos.columna].color == col
+    )
+
+def direccion_de_movimiento_habilitada(t: Tablero, pos: Posicion, d: Direccion):
+    """
+    Vamos a determinar si la direccion esta habilitada.
+    Decimos que la direccion esta habilitada si existe una figura f y un color col tales que hay una figura f de color col en la posicion pos y si es que esta figura es un conejo(dorado o plateado) entonces la direccion d sea distinta de NORTE o SUR.
+
+    PRE: tablero_bien_formado(t).
+
+    ARGS:
+        t (Tablero): El tablero actual.
+        pos (Posicion): Posicion de origen de la cual queremos ver si un movimiento es posible.
+
+    Returns:
+        True si la direccion de movimiento esta habilitada; False de lo contrario.
+    """    
+    res: bool = False
+    for f in [ELEFANTE, CAMELLO, CABALLO, PERRO, GATO, CONEJO]:
+        for col in [DORADO,PLATEADO]:
+            if (
+                hay_figura_de_color(t,pos,f,col)
+                and not (f == CONEJO and col == DORADO and d == SUR)
+                and not (f == CONEJO and col == PLATEADO and d == NORTE)
+            ):
+                res: bool = True
+    return res
+
+def puede_mover_a_secas(t: Tablero, pos: Posicion, d: Direccion):
+    """
+    Determina si puede moverse a secas en direccion d desde la posicion pos en el tablero t. Decimos que se puede mover a secas si la posicion a la que se quiere mover es una casilla vacia.
+    PRE: tablero_bien_formado(t).
+
+    ARGS:
+        t (Tablero): El tablero actual.
+        pos (Posicion): Posicion de origen de la cual queremos ver si un movimiento a secas es posible en la direccion d.
+        d (Direccion): Direccion en la que nos queremos fijar si es posible hacer un movimiento a secas.
+
+    Returns:
+        True si el movimiento a secas se puede realizar; False de lo contrario.
+    """    
+    return hay_casilla_vacia_hacia(t,pos,d)
+
+def puede_arrastrar(t: Tablero, pos: Posicion, d: Direccion, d_arrastre: Direccion):
+    """
+    Determina si puede arrastrar en direccion d desde la posicion pos en el tablero t. Decimos que puede arrastrar si en la direccion d hay una casilla vacia y en la direccion opuesta(d_arrastre) hay una pieza mas debil.
+    PRE: tablero_bien_formado(t).
+
+    ARGS:
+        t (Tablero): El tablero actual.
+        pos (Posicion): Posicion de origen de la cual queremos ver si es posible arrastrar.
+        d (Direccion): Direccion en la que se mueve la pieza.
+        d_arrastre (Direccion): Direccion de arrastre
+
+    Returns:
+        True si se puede arrastrar; False de lo contrario.
+    """        
+    return hay_casilla_vacia_hacia(t, pos, d) and hay_pieza_enemiga_mas_debil_hacia(t, pos, opuesta(d_arrastre))
+
+def puede_empujar(t: Tablero, pos: Posicion, d: Direccion, d_empuje: Direccion):
+    """
+    Determina si se puede empujar desde la posicion pos en direccion d. Decimos que se puede empujar si en la direccion d hay una pieza enemiga de menor fuerza, y la casilla vecina a esa pieza en la direccion d_empuje esta vacia.
+    PRE: tablero_bien_formado(t).
+
+    ARGS:
+        t (Tablero): El tablero actual.
+        pos (Posicion): Posicion de origen de la cual queremos ver si es posible empujar.
+        d (Direccion): Direccion en la que esta la pieza a empujar.
+        d_arrastre (Direccion): Direccion a la que se empuja la pieza enemiga.
+
+    Returns:
+        True si se puede empujar; False de lo contrario.
+    """ 
+    return (
+        hay_pieza_enemiga_mas_debil_hacia(t, pos, d)
+        and hay_casilla_vacia_hacia(t, posicion_vecina_hacia(pos, d), d_empuje)
+    )
+
+def puede_realizar_accion(t: Tablero, m: Movimiento):
+    """
+    Determina si se puede realizar la accion. Decimos que se puede realizar la accion si la accion del movimiento m se puede realizar.
+    ARGS:
+        t (Tablero): El tablero actual.
+        m (Movimiento): Movimiento al que se quiere ver si la accion se puede realizar.
+
+    Returns:
+        True si la accion del movimiento m se puede realziar; False de lo contrario.
+    """ 
+    res: bool = True
+    if m.accion == MOVER_A_SECAS:
+        res: bool = puede_mover_a_secas(t,m.origen,m.pasos[0])
+    elif m.accion == ARRASTRAR:
+        res: bool = puede_arrastrar(t,m.origen,m.pasos[0],m.pasos[1])
+    elif m.accion == EMPUJAR:
+        res: bool = puede_empujar(t,m.origen,m.pasos[0],m.pasos[1])
+    return res
+
 
 def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
-    raise Exception("No implementado")
+    """
+    Vamos a determinar si se puede realizar un movimiento.
 
+    Decimos que podemos realizar un movimiento si: El color de la pieza del origen coincide con el turno del jugador con ese respectivo color.
+                                                   La pieza no esta congelada.
+                                                   La direccion de moviemiento esta habilitada.
+                                                   La cantidad de pasos consumidos + los pasos a dar <= maximo de pasos.
+                                                   Si se puede realizar la accion.
+    PRE: juego_bien_formado(j) ∧ movimeinto_bien_formado(m).
+
+    ARGS:
+        j (Juego): El juego actual.
+        m (Movimiento): El movimiento a realizar.
+
+    Returns:
+        True si el movimiento se puede realizar; False de lo contrario.
+    """
+    return (
+        hay_pieza_de_color(j.tablero,m.origen,j.turno)
+        and not hay_pieza_congelada(j.tablero,m.origen)
+        and direccion_de_movimiento_habilitada(j.tablero,m.origen,m.pasos[0])
+        and (j.pasos_consumidos + len(m.pasos) <= MAX_PASOS)
+        and puede_realizar_accion(j.tablero,m)
+    )
+    
 #### Ejercicio 5
 
 def activar_trampas(t : Tablero) -> Tablero:
