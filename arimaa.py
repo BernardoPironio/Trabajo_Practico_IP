@@ -31,7 +31,7 @@ def tablero_bien_formado(t : Tablero) -> bool:
     validez: bool = True 
     for fila in t: 
         if len(fila) != ANCHO:
-            return False
+            validez: bool = False
     return validez and len(t) == ALTO
 
 def posicion_en_tablero(pos : Posicion) -> bool:
@@ -40,7 +40,7 @@ def posicion_en_tablero(pos : Posicion) -> bool:
         ARGS: pos (Posicion): La posicion que se desea verificar.
         Returns: True si es una posicion valida, False si no lo es.
         '''
-    return (0 <= pos.fila <= ALTO) and (0 <= pos.columna <= ANCHO)
+    return (0 <= pos.fila < ALTO) and (0 <= pos.columna < ANCHO)
     
 def movimiento_bien_formado(m : Movimiento) -> bool:
     ''' Verifica que el movimiento a realizar este bien formado. 
@@ -51,9 +51,9 @@ def movimiento_bien_formado(m : Movimiento) -> bool:
     if m.accion == MOVER_A_SECAS:
         pasos_correctos: bool = len(m.pasos) == 1 
     elif m.accion in (ARRASTRAR,EMPUJAR):
-        pasos_correctos = len(m.pasos) == 2
+        pasos_correctos: bool = len(m.pasos) == 2
     else:
-        pasos_correctos = False
+        pasos_correctos: bool = False
     return pasos_correctos and posicion_en_tablero(m.origen)
 
 def juego_bien_formado(j : Juego) -> bool:
@@ -62,13 +62,13 @@ def juego_bien_formado(j : Juego) -> bool:
     ARGS: j (Juego): El juego que se desea verificar.
     Returns: True si es un juego valido, False si no lo es.
     '''
-    return tablero_bien_formado(j.tablero) and (0 <= j.pasos_consumidos <= MAX_PASOS)
+    return tablero_bien_formado(j.tablero) and (0 <= j.pasos_consumidos < MAX_PASOS)
 
 #### Ejercicio 2
 
 def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     """
-    Devuelve el valor de la nueva posición a partir de la dirección en la que se mueve la figura.
+    Devuelve el valor de la  posición en direccion d con respecto a la posicion.
     PRE: True.
     ARGS: 
         pos (Posición): La posición original. 
@@ -113,6 +113,29 @@ def hay_casilla_vacia(t: Tablero, pos: Posicion) -> bool:
     """
     return casilla_en_posicion(t,pos) == VACIA
 
+def hay_figura_de_color(t: Tablero, pos: Posicion, f: Figura, col: Color):
+    """
+    Vamos a determinar si dado el tablero t, la posicion pos es una posicion en el tablero, no hay casilla vacia en la posicion pos, 
+    la figura f coincide con la figura de esa posicion en el tablero y  el color col coincide con el color de esa posicio en ele tablero.
+
+    PRE: tablero_bien_formado(t).
+
+    ARGS:
+        t (Tablero): El tablero actual.
+        pos (Posicion): La posicion a cheaquar si hay una figura de cierto color.
+        f (Figura): Tipo de figura a chequear si esta en la casilla.
+        col (Color): Color a chequear si esta en la casilla.
+
+    Returns:
+        True si hay una figura f de color col en la casilla de la posicion pos(valida en el tablero); False de lo contrario.
+    """    
+    return(
+        posicion_en_tablero(pos)
+        and not hay_casilla_vacia(t,pos)
+        and t[pos.fila][pos.columna].figura == f
+        and t[pos.fila][pos.columna].color == col
+    )
+
 def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
     """
     Verifica si la casilla que está en la posición pos tiene una figura de color col.
@@ -125,7 +148,9 @@ def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
             True si la casilla en esa posición tiene una figura del color col y False si está vacía o es de otro color que col.
     """
     casilla: Casilla = casilla_en_posicion(t,pos)
-    return casilla != VACIA and casilla.color == col
+    if hay_casilla_vacia(t,pos):
+        return False
+    return hay_figura_de_color(t,pos,casilla.figura,col)
 
 #### Ejercicio 3
 
@@ -150,7 +175,6 @@ def hay_casilla_vacia_hacia(t: Tablero, pos: Posicion, d: Direccion) -> bool:
         res = hay_casilla_vacia(t, pos_prima)
     return res
 
-
 def hay_pieza(t: Tablero, pos: Posicion) -> bool:
     """
     Vamos a determinar si en la posicion pos del tablero t hay una figura, sea esta DORADA o PLATEADA.
@@ -165,7 +189,10 @@ def hay_pieza(t: Tablero, pos: Posicion) -> bool:
         True si es que hay una figura dorada o plateada.
         False de lo contrario.
     """
-    return hay_pieza_de_color(t, pos, DORADO) or hay_pieza_de_color(t, pos, PLATEADO)
+    casilla: Casilla = casilla_en_posicion(t,pos)
+    if hay_casilla_vacia(t,pos):
+        return False
+    return hay_figura_de_color(t, pos, casilla.figura, DORADO) or hay_figura_de_color(t, pos, casilla.figura,PLATEADO)
 
 
 def hay_pieza_amiga_vecina(t: Tablero, pos: Posicion) -> bool:
@@ -186,13 +213,12 @@ def hay_pieza_amiga_vecina(t: Tablero, pos: Posicion) -> bool:
     color_amigo: Color = casilla_en_posicion(t, pos).color
 
     for d in [NORTE, SUR, ESTE, OESTE]:
-        pos_v: Posicion = posicion_vecina_hacia(pos, d)
+        pos_vecina: Posicion = posicion_vecina_hacia(pos, d)
 
-        if posicion_en_tablero(pos_v) and hay_pieza_de_color(t, pos_v, color_amigo):
+        if posicion_en_tablero(pos_vecina) and hay_pieza_de_color(t, pos_vecina, color_amigo):
             res = True
 
     return res
-
 
 def hay_pieza_enemiga_mas_debil_hacia(t: Tablero, pos: Posicion, d: Direccion) -> bool:
     """
@@ -211,11 +237,11 @@ def hay_pieza_enemiga_mas_debil_hacia(t: Tablero, pos: Posicion, d: Direccion) -
         False en caso contrario.
     """
     res: bool = False
-    pos_v: Posicion = posicion_vecina_hacia(pos, d)
+    pos_vecina: Posicion = posicion_vecina_hacia(pos, d)
 
-    if posicion_en_tablero(pos_v) and not hay_casilla_vacia(t, pos_v):
+    if posicion_en_tablero(pos_vecina) and not hay_casilla_vacia(t, pos_vecina):
         pieza_actual: Casilla = casilla_en_posicion(t, pos)
-        pieza_vecina: Casilla = casilla_en_posicion(t, pos_v)
+        pieza_vecina: Casilla = casilla_en_posicion(t, pos_vecina)
 
         es_enemigo: bool = pieza_vecina.color == oponente(pieza_actual.color)
         es_mas_debil: bool = fuerza(pieza_vecina.figura) < fuerza(pieza_actual.figura)
@@ -223,7 +249,6 @@ def hay_pieza_enemiga_mas_debil_hacia(t: Tablero, pos: Posicion, d: Direccion) -
         res = es_enemigo and es_mas_debil
 
     return res
-
 
 def hay_pieza_enemiga_mas_fuerte_vecina(t: Tablero, pos: Posicion) -> bool:
     """
@@ -243,10 +268,10 @@ def hay_pieza_enemiga_mas_fuerte_vecina(t: Tablero, pos: Posicion) -> bool:
     pieza_actual: Casilla = casilla_en_posicion(t, pos)
 
     for d in [NORTE, SUR, ESTE, OESTE]:
-        pos_v: Posicion = posicion_vecina_hacia(pos, d)
+        pos_vecina: Posicion = posicion_vecina_hacia(pos, d)
 
-        if posicion_en_tablero(pos_v) and not hay_casilla_vacia(t, pos_v):
-            pieza_vecina: Casilla = casilla_en_posicion(t, pos_v)
+        if posicion_en_tablero(pos_vecina) and not hay_casilla_vacia(t, pos_vecina):
+            pieza_vecina: Casilla = casilla_en_posicion(t, pos_vecina)
 
             es_enemigo: bool = pieza_vecina.color == oponente(pieza_actual.color)
             es_mas_fuerte: bool = fuerza(pieza_vecina.figura) > fuerza(pieza_actual.figura)
@@ -255,7 +280,6 @@ def hay_pieza_enemiga_mas_fuerte_vecina(t: Tablero, pos: Posicion) -> bool:
                 res = True
 
     return res
-
 
 def hay_pieza_congelada(t: Tablero, pos: Posicion) -> bool:
     """
@@ -280,30 +304,7 @@ def hay_pieza_congelada(t: Tablero, pos: Posicion) -> bool:
 
     return res
 
-
 #### Ejercicio 4
-def hay_figura_de_color(t: Tablero, pos: Posicion, f: Figura, col: Color):
-    """
-    Vamos a determinar si dado el tablero t, la posicion pos es una posicion en el tablero, no hay casilla vacia en la posicion pos, 
-    la figura f coincide con la figura de esa posicion en el tablero y  el color col coincide con el color de esa posicio en ele tablero.
-
-    PRE: tablero_bien_formado(t).
-
-    ARGS:
-        t (Tablero): El tablero actual.
-        pos (Posicion): La posicion a cheaquar si hay una figura de cierto color.
-        f (Figura): Tipo de figura a chequear si esta en la casilla.
-        col (Color): Color a chequear si esta en la casilla.
-
-    Returns:
-        True si hay una figura f de color col en la casilla de la posicion pos(valida en el tablero); False de lo contrario.
-    """    
-    return(
-        posicion_en_tablero(pos)
-        and not hay_casilla_vacia(t,pos)
-        and t[pos.fila][pos.columna].figura == f
-        and t[pos.fila][pos.columna].color == col
-    )
 
 def direccion_de_movimiento_habilitada(t: Tablero, pos: Posicion, d: Direccion):
     """
@@ -398,7 +399,6 @@ def puede_realizar_accion(t: Tablero, m: Movimiento):
     elif m.accion == EMPUJAR:
         res: bool = puede_empujar(t,m.origen,m.pasos[0],m.pasos[1])
     return res
-
 
 def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
     """
