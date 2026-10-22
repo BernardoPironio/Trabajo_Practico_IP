@@ -376,7 +376,7 @@ def activar_trampas(t : Tablero) -> Tablero:
     Si al terminar un movimiento una pieza está en una de las casillas trampa y no tiene piezas amigas vecinas, esa pieza se saca del tablero.
 
     PRE: 
-        tableroBienFormado (t).
+        tablero_bien_formado(t).
     ARGS:
         t (tablero): Es el tablero al que le voy a activar las trampas.
     Returns:
@@ -390,6 +390,19 @@ def activar_trampas(t : Tablero) -> Tablero:
 #### Ejercicio 6
 
 def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
+    '''
+    Realiza el movimiento de una pieza, actualizando el juego, actualizando el tablero,
+    el turno y la cantidad de pasos consumidos.
+
+    PRE:
+        juego_bien_formado(j) ∧ movimeinto_bien_formado(m)
+        puede_realizar_movimiento(j, m)
+    ARGS:
+        j (Juego): El juego actual.
+        m (Movimiento): EL movimiento a realizar.
+    Retruns:
+        Devuelve el juego despues del movimiento, este juego esta bien formado.
+    '''
     raise Exception("No implementado")
 
 #### Ejercicio 7

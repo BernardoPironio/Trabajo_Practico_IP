@@ -712,8 +712,24 @@ class test_puede_realizar_movimiento(unittest.TestCase):
         m = Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE,NORTE,NORTE])
         self.assertFalse(puede_realizar_movimiento(j, m)) 
 
-    # TESTS SOBRE CONEJOS 
+    def test_mover_a_secas_invalido_fuera_del_tablero(self):
+        ''' No puede moverse debido a que la nueva posicion queda fuera del tablero.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t,PLATEADO,0)
+        m = Movimiento(MOVER_A_SECAS,Posicion(0,1), [SUR])
+        self.assertFalse(puede_realizar_movimiento(j,m))
 
+    # TESTS SOBRE CONEJOS 
     def test_no_pude_realizar_movimiento_conejo_plateado(self):
         ''' No puede realizar movimiento porque el conejo plateado no puede volver atras (NORTE)'''
         t = leer_tablero([
@@ -748,10 +764,10 @@ class test_puede_realizar_movimiento(unittest.TestCase):
         m = Movimiento(MOVER_A_SECAS, Posicion(5, 6), [SUR])
         self.assertFalse(puede_realizar_movimiento(j, m))
 
-
     # TEST SOBRE LAS CONDICIONES DE LAS ACCIONES
-    
-    def test_mover_a_secas_conejor_sur_varios_pasos(self):
+    # MOVER A SECAS
+    def test_mover_a_secas_invalido_pos_ocupada_enemiga(self):
+        ''' No puede moverse hacia la nueva posicion porque hay una pieza enemiga ocupando el espacio.'''
         t = leer_tablero([
               '--eMr---', #7
               '--------', #6
@@ -759,16 +775,16 @@ class test_puede_realizar_movimiento(unittest.TestCase):
               '--------', #4
               '--mMd---', #3
               '---D----', #2
-              '--------', #1
+              '-R------', #1
               '-mD--mDR', #0
               #01234567
             ])
-        j = Juego(t,PLATEADO,0)
-        m = Movimiento(MOVER_A_SECAS,Posicion(5,6), [SUR,SUR,SUR])
-        self.assertTrue(puede_realizar_movimiento(j,m))
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
 
-    # despu hay que chequar
-    def test_mover_a_secas_invalido_por_pieza_con_color_incorrecto(self):
+    def test_mover_a_secas_invalido_pos_ocupada_amiga(self):
+        ''' No puede moverse hacia la nueva posicion porque hay una pieza amiga ocupando el espacio.'''
         t = leer_tablero([
               '--eMr---', #7
               '--------', #6
@@ -776,117 +792,227 @@ class test_puede_realizar_movimiento(unittest.TestCase):
               '--------', #4
               '--mMd---', #3
               '---D----', #2
-              '--------', #1
+              '-r------', #1
               '-mD--mDR', #0
               #01234567
             ])
-        j = Juego(t,PLATEADO,0)
-        m = Movimiento(MOVER_A_SECAS,Posicion(0,2), [NORTE])
-        self.assertFalse(puede_realizar_movimiento(j,m))
-        #st_mover_a_secas_invalido_por
-    def test_mover_a_secas_invalido_por_posicion_ocupada_por_enemigo(self):
-        t = leer_tablero([
-              '--eMr---', #7
-              '--------', #6
-              '-R----r-', #5
-              '--------', #4
-              '--mMd---', #3
-              '---D----', #2
-              '--------', #1
-              '-mD--mDR', #0
-              #01234567
-            ])
-        j = Juego(t,PLATEADO,0)
-        m = Movimiento(MOVER_A_SECAS,Posicion(0,1), [ESTE])
-        self.assertFalse(puede_realizar_movimiento(j,m))
-
-    def test_mover_a_secas_invalido_no_hay_piez(self):
-        t = leer_tablero([
-              '--eMr---', #7
-              '--------', #6
-              '-R----r-', #5
-              '--------', #4
-              '--mMd---', #3
-              '---D----', #2
-              '--------', #1
-              '-mD--mDR', #0
-              #01234567
-            ])
-        j = Juego(t,PLATEADO,0)
-        m = Movimiento(MOVER_A_SECAS,Posicion(1,1), [ESTE])
-        self.assertFalse(puede_realizar_movimiento(j,m))
-
-    def test_mover_a_secas_invalido_pieza_congelada(self):
-        t = leer_tablero([
-              '--eMr---', #7
-              '--------', #6
-              '-R----r-', #5
-              '--------', #4
-              '--mMde--', #3
-              '---D----', #2
-              '--------', #1
-              '-mD--mDR', #0
-              #01234567
-            ])
-        j = Juego(t,PLATEADO,0)
-        m = Movimiento(MOVER_A_SECAS,Posicion(4,3), [NORTE])
-        self.assertFalse(puede_realizar_movimiento(j,m))
-
-    def test_mover_a_secas_invalido_conejo_plateado_norte(self):
-        t = leer_tablero([
-              '--eMr---', #7
-              '--------', #6
-              '-R----r-', #5
-              '--------', #4
-              '--mMd---', #3
-              '---D----', #2
-              '--------', #1
-              '-mD--mDR', #0
-              #01234567
-            ])
-        j = Juego(t,PLATEADO,0)
-        m = Movimiento(MOVER_A_SECAS,Posicion(6,5), [NORTE])
-        self.assertFalse(puede_realizar_movimiento(j,m))
-
-    def test_mover_a_secas_invalido_fuera_del_tablero(self):
-        t = leer_tablero([
-              '--eMr---', #7
-              '--------', #6
-              '-R----r-', #5
-              '--------', #4
-              '--mMd---', #3
-              '---D----', #2
-              '--------', #1
-              '-mD--mDR', #0
-              #01234567
-            ])
-        j = Juego(t,PLATEADO,0)
-        m = Movimiento(MOVER_A_SECAS,Posicion(0,1), [SUR])
-        self.assertFalse(puede_realizar_movimiento(j,m))
-
-    def test_mover_a_secas_sin_pasos_suficientes(self):
-        t = leer_tablero([
-              '--eMr---', #7
-              '--------', #6
-              '-R----r-', #5
-              '--------', #4
-              '--mMd---', #3
-              '---D----', #2
-              '--------', #1
-              '-mD--mDR', #0
-              #01234567
-            ])
-        j = Juego(t,PLATEADO,3)
-        m = Movimiento(MOVER_A_SECAS,Posicion(0,1), [NORTE,NORTE])
-        self.assertFalse(puede_realizar_movimiento(j,m))
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
 
     # ARRASTRAR
-         
+    def test_arrastrar_plateado_ok(self):
+        ''' Caso base que funciona con arrastrar con pieza plateada.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(ARRASTRAR, Posicion(0, 1), [NORTE,OESTE])
+        self.assertTrue(puede_realizar_movimiento(j, m))
+
+    def test_arrastrar_dorado_ok(self):
+        ''' Caso base que funciona con arrastrar con pieza dorada.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, DORADO, 0)
+        m = Movimiento(ARRASTRAR, Posicion(3, 3), [NORTE,OESTE])
+        self.assertTrue(puede_realizar_movimiento(j, m))
+
+    def test_arrastrar_invalido_pieza_mayor_fuerza(self):
+        ''' No puede arrastrar porque la pieza a arrastrar es de mayor fuerza (o igual).'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mM--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(ARRASTRAR, Posicion(0, 1), [NORTE,OESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_arrastrar_invalido_sin_pieza_a_arrastrar(self):
+        ''' No puede arrastrar porque no hay pieza a arrastrar.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-m---mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(ARRASTRAR, Posicion(0, 1), [NORTE,OESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_arrastrar_invalido_pieza_a_arrastrar_amiga(self):
+        ''' No puede arrastrar porque la pieza a arrastrar es amiga.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mr--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(ARRASTRAR, Posicion(0, 1), [NORTE,OESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    # EMPUJAR
+    def test_empujar_platead_ok(self):
+        ''' Caso base que funciona con empujar con pieza plateada.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(0, 1), [ESTE,ESTE])
+        self.assertTrue(puede_realizar_movimiento(j, m))
+
+    def test_empujar_dorada_ok(self):
+        ''' Caso base que funciona con empujar con pieza dorada.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mE--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, DORADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(0, 2), [OESTE,OESTE])
+        self.assertTrue(puede_realizar_movimiento(j, m))
+        
+    def test_empujar_invalido_pieza_mas_fuerte(self):
+        ''' No puede empujar porque la pieza es mas fuerte(o misma fuerza).'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mM--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(0, 1), [ESTE,ESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_empujar_invalido_lugar_ocupado(self):
+        ''' No puede empujar porque el lugar al que empuja a la otra pieza esta ocupado.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mDr-mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(0, 1), [ESTE,ESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_empujar_invaido_no_hay_que_empujar(self):
+        ''' No puede empujar porque no hay pieza para empujar.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-m---mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(0, 1), [ESTE,ESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_empujar_invaido_pieza_amiga(self):
+        ''' No puede empujar porque la pieza a empujar es amiga.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mr--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(0, 1), [ESTE,ESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_empujar_invaido_empuja_fuera_tablero(self):
+        ''' No puede empujar porque el empujado se sale del tablero.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-m---meR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(0, 6), [ESTE,ESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
 #### Ejercicio 5
 
 class test_activar_trampas(unittest.TestCase):
 
     def test_activar_trampas_ok(self):
+        ''' Caso base donde se eliminan correctamente todas las piezas en una trampa (sin amigas vecinas).'''
+
         t0 = leer_tablero([
                '-eRD--rd', #7
                '--------', #6
@@ -914,6 +1040,8 @@ class test_activar_trampas(unittest.TestCase):
         self.assertEqual(t2, t1)
 
     def test_activar_trampas_sin_figuras_en_trampa(self):
+            ''' Se activan todas las trampas pero no habia piezas en las trampas. Entonces,
+            el tablero inicial es igual al tablero final.'''
             t0 = leer_tablero([
                    '-eRD--rd', #7
                    '--------', #6
@@ -941,6 +1069,8 @@ class test_activar_trampas(unittest.TestCase):
             self.assertEqual(t2, t1)
     
     def test_activar_trampas_con_pieza_amiga_vecina(self):
+            ''' Se activa el tablero y se eliminan todas las piezas en posiciones trampa, menos la
+            que tiene amiga vecina (5,2)'''
             t0 = leer_tablero([
                    '--RD--rd', #7
                    '--------', #6
@@ -968,6 +1098,8 @@ class test_activar_trampas(unittest.TestCase):
             self.assertEqual(t2, t1) 
     
     def test_activar_trampas_con_pieza_enemiga_vecina(self):
+            ''' Se activa el tablero y se eliminan las piezas en las posiciones trampa (enemiga 
+            vecina no salva a la pieza).'''
             t0 = leer_tablero([
                    '-eRD--rd', #7
                    '--------', #6
