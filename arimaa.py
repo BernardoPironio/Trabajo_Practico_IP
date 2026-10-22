@@ -27,9 +27,10 @@ def tablero_bien_formado(t : Tablero) -> bool:
     Determina si el tablero t esta bien formado.
     Decimos que un tablero t es valido si tiene un ancho y largo de 7 casillas.
 
-    ARGS: t (Tablero): El tablero que se desea verificar.
-
-    Returns: True si el tablero esta bien formado; False de lo contrario.
+    ARGS: 
+        t (Tablero): El tablero que se desea verificar.
+    Returns: 
+        True si el tablero esta bien formado; False de lo contrario.
     '''
     validez: bool = True 
     for fila in t: 
@@ -41,9 +42,10 @@ def posicion_en_tablero(pos : Posicion) -> bool:
     ''' 
     Determina si la posicion pos pertenece al tablero. 
 
-    ARGS: pos (Posicion): La posicion que se desea verificar.
-
-    Returns: True si la posicion esta en el tablero; False de lo contrario.
+    ARGS: 
+        pos (Posicion): La posicion que se desea verificar.
+    Returns: 
+        True si la posicion esta en el tablero; False de lo contrario.
     '''
     return (0 <= pos.fila < ALTO) and (0 <= pos.columna < ANCHO)
     
@@ -52,9 +54,10 @@ def movimiento_bien_formado(m : Movimiento) -> bool:
     Determina si el movimiento m esta bien formado.
     Decimos que le movimiento esta bien formado si la cantidad de pasos corresponde al movimiento por hacer.
 
-    ARGS: m (Movimiento): El movimiento que se desea verificar.
-
-    Returns: True si es un movimiento valido; False de lo contrario.
+    ARGS: 
+        m (Movimiento): El movimiento que se desea verificar.
+    Returns: 
+        True si es un movimiento valido; False de lo contrario.
     '''
     if m.accion == MOVER_A_SECAS:
         pasos_correctos: bool = len(m.pasos) == 1 
@@ -69,8 +72,10 @@ def juego_bien_formado(j : Juego) -> bool:
     Determina si el juego j esta bien formado. 
     Decimos que un juego esta bien formado si el tablero del juego esta bien formado y la cantidad de pasos consumidos es mayor a cero y no supera el maximo.
     
-    ARGS: j (Juego): El juego que se desea verificar.
-    Returns: True si el juego esta bien formado; False de lo contrario.
+    ARGS: 
+        j (Juego): El juego que se desea verificar.
+    Returns: 
+        True si el juego esta bien formado; False de lo contrario.
     '''
     return tablero_bien_formado(j.tablero) and (0 <= j.pasos_consumidos < MAX_PASOS)
 
@@ -79,7 +84,7 @@ def juego_bien_formado(j : Juego) -> bool:
 def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     """
     Devuelve el valor de la  posición en direccion d con respecto a la posicion.
-    PRE: True.
+
     ARGS: 
         pos (Posición): La posición original. 
         d (Dirección): La dirección hacia la que se mueve.
@@ -101,7 +106,9 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
 def casilla_en_posicion(t: Tablero, p: Posicion) -> Casilla:
     """
     Devuelve la casilla del tablero t que está ubicada en la posición pos.
-    PRE: tableroBienFormado (t) ∧ posiciónEnTablero(pos).
+
+    PRE: 
+        tableroBienFormado (t) ∧ posiciónEnTablero(pos).
     ARGS: 
         t (Tablero): El tablero que se desea verificar.
         p (Posición): La posición original.
@@ -113,54 +120,37 @@ def casilla_en_posicion(t: Tablero, p: Posicion) -> Casilla:
 
 def hay_casilla_vacia(t: Tablero, pos: Posicion) -> bool:
     """
-    Verifica si la casilla que está en la posición pos está vacía.
-    PRE: tableroBienFormado (t) ∧ posiciónEnTablero(pos).
+    Determina si la casilla que está en la posición pos está vacía.
+
+    PRE: 
+        tableroBienFormado (t) ∧ posiciónEnTablero(pos).
     ARGS: 
         t (Tablero): El tablero que se desea verificar.
         pos (Posición): La posición original.
     Returns:
-        True si la casilla en esa posición es un espacio vacío y False si no lo es.
+        True si la casilla en esa posición es un espacio vacío; False de lo contrario.
     """
     return casilla_en_posicion(t,pos) == VACIA
 
-def hay_figura_de_color(t: Tablero, pos: Posicion, f: Figura, col: Color):
-    """
-    Vamos a determinar si dado el tablero t, la posicion pos es una posicion en el tablero, no hay casilla vacia en la posicion pos, 
-    la figura f coincide con la figura de esa posicion en el tablero y  el color col coincide con el color de esa posicio en ele tablero.
-
-    PRE: tablero_bien_formado(t).
-
-    ARGS:
-        t (Tablero): El tablero actual.
-        pos (Posicion): La posicion a cheaquar si hay una figura de cierto color.
-        f (Figura): Tipo de figura a chequear si esta en la casilla.
-        col (Color): Color a chequear si esta en la casilla.
-
-    Returns:
-        True si hay una figura f de color col en la casilla de la posicion pos(valida en el tablero); False de lo contrario.
-    """    
-    return(
-        posicion_en_tablero(pos)
-        and not hay_casilla_vacia(t,pos)
-        and t[pos.fila][pos.columna].figura == f
-        and t[pos.fila][pos.columna].color == col
-    )
-
 def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
     """
-    Verifica si la casilla que está en la posición pos tiene una figura de color col.
-    PRE: tableroBienFormado (t) ∧ posiciónEnTablero(pos).
+    Determina si la casilla que está en la posición pos tiene una figura de color col.
+
+    PRE: 
+        tableroBienFormado (t) ∧ posiciónEnTablero(pos).
     ARGS: 
         t (Tablero): El tablero que se desea verificar.
         pos (Posición): La posición original.
         col (Color): El color de la figura que está en casilla de esa posición.
     Returns:
-            True si la casilla en esa posición tiene una figura del color col y False si está vacía o es de otro color que col.
+        True si la casilla en esa posición tiene una figura del color col y False si está vacía o es de otro color que col.
     """
     casilla: Casilla = casilla_en_posicion(t,pos)
-    if hay_casilla_vacia(t,pos):
-        return False
-    return hay_figura_de_color(t,pos,casilla.figura,col)
+    if casilla == VACIA:
+        res: bool = False
+    else:
+        res: bool = casilla.color == col
+    return res
 
 #### Ejercicio 3
 
@@ -315,6 +305,28 @@ def hay_pieza_congelada(t: Tablero, pos: Posicion) -> bool:
     return res
 
 #### Ejercicio 4
+def hay_figura_de_color(t: Tablero, pos: Posicion, f: Figura, col: Color):
+    """
+    Determina que si dado el tablero t, la posicion pos es una posicion en el tablero, no hay casilla vacia en la posicion pos, 
+    la figura f coincide con la figura de esa posicion en el tablero y  el color col coincide con el color de esa posicio en ele tablero.
+
+    PRE: tablero_bien_formado(t).
+
+    ARGS:
+        t (Tablero): El tablero actual.
+        pos (Posicion): La posicion a cheaquar si hay una figura de cierto color.
+        f (Figura): Tipo de figura a chequear si esta en la casilla.
+        col (Color): Color a chequear si esta en la casilla.
+
+    Returns:
+        True si hay una figura f de color col en la casilla de la posicion pos(valida en el tablero); False de lo contrario.
+    """    
+    return(
+        posicion_en_tablero(pos)
+        and not hay_casilla_vacia(t,pos)
+        and t[pos.fila][pos.columna].figura == f
+        and t[pos.fila][pos.columna].color == col
+    )
 
 def direccion_de_movimiento_habilitada(t: Tablero, pos: Posicion, d: Direccion):
     """
