@@ -23,10 +23,13 @@ def pasar_turno(j : Juego) -> Juego: # pragma: no cover
 #### Ejercicio 1
 
 def tablero_bien_formado(t : Tablero) -> bool:
-    ''' Verifica que el tablero t sea válido. 
-    PRE: True.
+    ''' 
+    Determina si el tablero t esta bien formado.
+    Decimos que un tablero t es valido si tiene un ancho y largo de 7 casillas.
+
     ARGS: t (Tablero): El tablero que se desea verificar.
-    Returns: True si el tablero es valido, False si no lo es.
+
+    Returns: True si el tablero esta bien formado; False de lo contrario.
     '''
     validez: bool = True 
     for fila in t: 
@@ -35,18 +38,23 @@ def tablero_bien_formado(t : Tablero) -> bool:
     return validez and len(t) == ALTO
 
 def posicion_en_tablero(pos : Posicion) -> bool:
-    ''' Verifica que la posicion sea efectivamente una del tablero. 
-        PRE: True.
-        ARGS: pos (Posicion): La posicion que se desea verificar.
-        Returns: True si es una posicion valida, False si no lo es.
-        '''
+    ''' 
+    Determina si la posicion pos pertenece al tablero. 
+
+    ARGS: pos (Posicion): La posicion que se desea verificar.
+
+    Returns: True si la posicion esta en el tablero; False de lo contrario.
+    '''
     return (0 <= pos.fila < ALTO) and (0 <= pos.columna < ANCHO)
     
 def movimiento_bien_formado(m : Movimiento) -> bool:
-    ''' Verifica que el movimiento a realizar este bien formado. 
-    PRE: True.
+    ''' 
+    Determina si el movimiento m esta bien formado.
+    Decimos que le movimiento esta bien formado si la cantidad de pasos corresponde al movimiento por hacer.
+
     ARGS: m (Movimiento): El movimiento que se desea verificar.
-    Returns: True si es un movimiento valido, False si no lo es.
+
+    Returns: True si es un movimiento valido; False de lo contrario.
     '''
     if m.accion == MOVER_A_SECAS:
         pasos_correctos: bool = len(m.pasos) == 1 
@@ -57,10 +65,12 @@ def movimiento_bien_formado(m : Movimiento) -> bool:
     return pasos_correctos and posicion_en_tablero(m.origen)
 
 def juego_bien_formado(j : Juego) -> bool:
-    ''' Verifica que juego este bien formado. 
-    PRE: True.
+    ''' 
+    Determina si el juego j esta bien formado. 
+    Decimos que un juego esta bien formado si el tablero del juego esta bien formado y la cantidad de pasos consumidos es mayor a cero y no supera el maximo.
+    
     ARGS: j (Juego): El juego que se desea verificar.
-    Returns: True si es un juego valido, False si no lo es.
+    Returns: True si el juego esta bien formado; False de lo contrario.
     '''
     return tablero_bien_formado(j.tablero) and (0 <= j.pasos_consumidos < MAX_PASOS)
 
