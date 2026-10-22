@@ -443,8 +443,46 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
     
 #### Ejercicio 5
 
+def copiar_tablero (t: Tablero) -> Tablero:
+    copia: Tablero = []
+    for elemento in t:
+        copia.append(elemento.copy())
+    return copia
+
+def sacarPieza (t: Tablero, pos: Posicion) -> Tablero:
+    t1: Tablero = copiar_tablero(t)
+    t1[pos.fila][pos.columna] = VACIA
+    return t1
+
+def activar_una_trampa (t: tablero, pos: Posicion) -> Tablero:
+    t1: Tablero = copiar_tablero(t)
+    if casilla_en_posicion(t1,pos) == VACIA:
+        return t1
+    if hay_pieza_amiga_vecina (t1,pos):
+        return t1
+    if not hay_pieza_amiga_vecina (t1,pos):
+        t1 = sacarPieza (t1,pos)
+    return t1
+
 def activar_trampas(t : Tablero) -> Tablero:
-    raise Exception("No implementado")
+    """
+    Activa todas las trampas del tablero t y devuelve un tablero con todas las trampas activadas
+    
+    Las posiciones trampa son: [(2, 2), (2, 5), (5, 2), (5, 5)]
+    Si al terminar un movimiento una pieza está en una de las casillas trampa y no tiene piezas amigas vecinas, esa pieza se saca del tablero.
+
+    PRE: tableroBienFormado (t).
+
+    ARGS:
+        t (tablero): Es el tablero al que le voy a activar las trampas.
+
+    Returns:
+        Un nuevo tablero con todas las trampas activadas.
+    """
+    t1: Tablero = copiar_tablero(t)
+    for trampa in POSICIONES_TRAMPA:
+        t1= activar_una_trampa (t1,trampa)
+    return t1
 
 #### Ejercicio 6
 

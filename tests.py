@@ -805,6 +805,87 @@ class test_activar_trampas(unittest.TestCase):
         self.assertNotEqual(t0, t1)
         self.assertEqual(t2, t1)
 
+    def test_activar_trampas_sin_figuras_en_trampa(self):
+            t0 = leer_tablero([
+                   '-eRD--rd', #7
+                   '--------', #6
+                   'H-------', #5
+                   '-H--r-Cr', #4
+                   'R-------', #3
+                   'R-------', #2
+                   'R-------', #1
+                   'c-D---R-', #0
+                   #01234567
+                 ])
+            t1 = leer_tablero([
+                   '-eRD--rd', #7
+                   '--------', #6
+                   'H-------', #5
+                   '-H--r-Cr', #4
+                   'R-------', #3
+                   'R-------', #2
+                   'R-------', #1
+                   'c-D---R-', #0
+                   #01234567
+                 ])
+            t2 = activar_trampas(t0)
+            self.assertEqual(t0, t1)
+            self.assertEqual(t2, t1)
+    
+    def test_activar_trampas_con_pieza_amiga_vecina(self):
+            t0 = leer_tablero([
+                   '--RD--rd', #7
+                   '--------', #6
+                   'H-re-E--', #5
+                   '-H--r-Cr', #4
+                   'R-------', #3
+                   'R-H--m--', #2
+                   'R-------', #1
+                   'c-D---R-', #0
+                   #01234567
+                 ])
+            t1 = leer_tablero([
+                   '--RD--rd', #7
+                   '--------', #6
+                   'H-re----', #5
+                   '-H--r-Cr', #4
+                   'R-------', #3
+                   'R-------', #2
+                   'R-------', #1
+                   'c-D---R-', #0
+                   #01234567
+                 ])
+            t2 = activar_trampas(t0)
+            self.assertNotEqual(t0, t1)
+            self.assertEqual(t2, t1) 
+    
+    def test_activar_trampas_con_pieza_enemiga_vecina(self):
+            t0 = leer_tablero([
+                   '-eRD--rd', #7
+                   '--------', #6
+                   '-Hr--E--', #5
+                   '-H--r-Cr', #4
+                   'R-------', #3
+                   'R-H--m--', #2
+                   'R-------', #1
+                   'c-D---R-', #0
+                   #01234567
+                 ])
+            t1 = leer_tablero([
+                   '-eRD--rd', #7
+                   '--------', #6
+                   '-H------', #5
+                   '-H--r-Cr', #4
+                   'R-------', #3
+                   'R-------', #2
+                   'R-------', #1
+                   'c-D---R-', #0
+                   #01234567
+                 ])
+            t2 = activar_trampas(t0)
+            self.assertNotEqual(t0, t1)
+            self.assertEqual(t2, t1)            
+
 #### Ejercicio 6
 
 class test_realizar_movimiento(unittest.TestCase):
@@ -857,4 +938,7 @@ class test_ganador_del_juego(unittest.TestCase):
         j = Juego(t, PLATEADO, 0)
         self.assertTrue(hay_ganador_determinado(j))
         self.assertEqual(ganador_del_juego(j), DORADO)
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2) 
 
