@@ -625,9 +625,8 @@ class test_hay_pieza_congelada(unittest.TestCase):
 
 class test_puede_realizar_movimiento(unittest.TestCase):
 
-    # MOVER A SECAS
-
     def test_mover_a_secas_ok(self):
+        ''' Caso base que funciona.'''
         t = leer_tablero([
               '--eMr---', #7
               '--------', #6
@@ -642,6 +641,115 @@ class test_puede_realizar_movimiento(unittest.TestCase):
         j = Juego(t, PLATEADO, 0)
         m = Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE])
         self.assertTrue(puede_realizar_movimiento(j, m))
+
+    # TESTS SOBRE LAS CONDICIONES DEL JUEGO/TABELRO.
+    def test_no_puede_realizar_movimiento_casilla_vacia(self):
+        ''' No se puede realizar el movimiento porque la casilla del origen del movimiento es vacia.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(0, 0), [NORTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))    
+
+    def test_no_pude_realziar_movimiento_color_incorrecto(self):
+        ''' No puede realizar el movimiento porque la posicion del origen a mover corresponde con 
+        una pieza de color distinto al color del turno del juego.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(0, 2), [NORTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_no_pude_realziar_movimiento_pieza_congelada(self):
+        ''' No puede realizar el movimiento porque la pieza a mover esta congelada.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mE--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))    
+    
+    def test_no_puede_realizar_movimiento_max_pasos_superado(self):
+        ''' No puede realizar movimiento porque supera la cantidad maxima de pasos.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 1)
+        m = Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE,NORTE,NORTE])
+        self.assertFalse(puede_realizar_movimiento(j, m)) 
+
+    # TESTS SOBRE CONEJOS 
+
+    def test_no_pude_realizar_movimiento_conejo_plateado(self):
+        ''' No puede realizar movimiento porque el conejo plateado no puede volver atras (NORTE)'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(5, 6), [NORTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_no_pude_realizar_movimiento_conejo_dorado(self):
+        ''' No puede realizar movimiento porque el conejo dorado no puede volver atras (NORTE)'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----R-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, DORADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(5, 6), [SUR])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+
+    # TEST SOBRE LAS CONDICIONES DE LAS ACCIONES
     
     def test_mover_a_secas_conejor_sur_varios_pasos(self):
         t = leer_tablero([
