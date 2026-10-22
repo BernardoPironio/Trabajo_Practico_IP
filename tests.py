@@ -278,12 +278,12 @@ class test_hay_pieza_de_color(unittest.TestCase):
         t = tablero_8x8_inicial_ejemplo()
         self.assertFalse(hay_pieza_de_color(t, Posicion(2, 0), DORADO))
 
-
 #### Ejercicio 3
 
 class test_hay_casilla_vacia_hacia(unittest.TestCase):
 
     def test_hay_casilla_vacia_hacia(self):
+        ''' Hay casilla vacia hacia el norte.'''
         t = leer_tablero([
               '-r----rr', #7
               '-mrh----', #6
@@ -297,7 +297,53 @@ class test_hay_casilla_vacia_hacia(unittest.TestCase):
             ])
         self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(0, 0), NORTE))
 
+    def test_hay_casilla_vacia_hacia_sur(self):
+        ''' Hay casilla vacia hacia el sur.'''
+        t = leer_tablero([
+              '-r----rr', #7
+              '-mrh----', #6
+              '-r---r--', #5
+              'd-EH---c', #4
+              '-M--hD-d', #3
+              '-R-e----', #2
+              '---H-R-C', #1
+              'R-R---RR', #0
+              #01234567
+            ])
+        self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(7, 7), SUR))
+
+    def test_hay_casilla_vacia_hacia_este(self):
+        ''' Hay casilla vacia hacia el este.'''
+        t = leer_tablero([
+              '-r----rr', #7
+              '-mrh----', #6
+              '-r---r--', #5
+              'd-EH---c', #4
+              '-M--hD-d', #3
+              '-R-e----', #2
+              '---H-R-C', #1
+              'R-R---RR', #0
+              #01234567
+            ])
+        self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(7, 1), ESTE))
+
+    def test_hay_casilla_vacia_hacia_oeste(self):
+        ''' Hay casilla vacia hacia el oeste.'''
+        t = leer_tablero([
+              '-r----rr', #7
+              '-mrh----', #6
+              '-r---r--', #5
+              'd-EH---c', #4
+              '-M--hD-d', #3
+              '-R-e----', #2
+              '---H-R-C', #1
+              'R-R---RR', #0
+              #01234567
+            ])
+        self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(7, 1), OESTE))
+
     def test_no_hay_casilla_vacia_hacia(self):
+        ''' No hay casilla vacia hacia el norte.'''
         t = leer_tablero([
               '-r----rr', #7
               '-mrh----', #6
@@ -311,7 +357,9 @@ class test_hay_casilla_vacia_hacia(unittest.TestCase):
             ])
         self.assertFalse(hay_casilla_vacia_hacia(t, Posicion(1, 3), NORTE))
 
-    def test_no_hay_casilla_hacia(self):
+    def test_casilla_vacia_hacia_fuera_del_tablero(self):
+        ''' No hay casilla vacia hacia cierta direccion porque sale del tablero (permitido por el requiere).'''
+        
         t = leer_tablero([
               '-r----rr', #7
               '-mrh----', #6
@@ -323,56 +371,12 @@ class test_hay_casilla_vacia_hacia(unittest.TestCase):
               'R-R---RR', #0
               #01234567
             ])
-        self.assertFalse(hay_casilla_vacia_hacia(t, Posicion(7, 3), NORTE))
-
-class test_hay_pieza(unittest.TestCase):
-
-    def test_hay_pieza_dorada(self):
-        t = leer_tablero([
-              'R-hRD-Rr', #7
-              'M----d--', #6
-              '-h-rrCR-', #5
-              'R-rcE---', #4
-              '--drRR--', #3
-              '-HD-H--m', #2
-              '--r-RCc-', #1
-              're---r--', #0
-              #01234567
-            ])
-        self.assertTrue(hay_pieza(t,Posicion(0,0)))
-
-    def test_hay_pieza_plateada(self):
-
-        t = leer_tablero([
-              'R-hRD-Rr', #7
-              'M----d--', #6
-              '-h-rrCR-', #5
-              'R-rcE---', #4
-              '--drRR--', #3
-              '-HD-H--m', #2
-              '--r-RCc-', #1
-              're---r--', #0
-              #01234567
-            ])
-        self.assertTrue(hay_pieza(t,Posicion(7,0)))
-
-    def test_no_hay_pieza(self):
-        t = leer_tablero([
-              'R-hRD-Rr', #7
-              'M----d--', #6
-              '-h-rrCR-', #5
-              'R-rcE---', #4
-              '--drRR--', #3
-              '-HD-H--m', #2
-              '--r-RCc-', #1
-              're---r--', #0
-              #01234567
-            ])
-        self.assertFalse(hay_pieza(t,Posicion(0,4)))
+        self.assertFalse(hay_casilla_vacia_hacia(t, Posicion(7, 7), NORTE))
 
 class test_hay_pieza_amiga_vecina(unittest.TestCase):
 
     def test_hay_pieza_amiga_vecina(self):
+        ''' Hay pieza amiga vecina.'''
         t = leer_tablero([
               'R-hRD-Rr', #7
               'M----d--', #6
@@ -386,14 +390,55 @@ class test_hay_pieza_amiga_vecina(unittest.TestCase):
             ])
         self.assertTrue(hay_pieza_amiga_vecina(t, Posicion(4, 3)))
 
-    # hay alguna amiga
-    # hay alguna enemiga
-    # hay alguna amiga y otra enemiga
-    # no hay pieza
+    def test_no_hay_pieza_amiga_vecina(self):
+        ''' Hay pieza vecina pero es enemiga.'''
+        t = leer_tablero([
+              'R-hRD-Rr', #7
+              'M----d--', #6
+              '-h-rrCR-', #5
+              'R-rcE---', #4
+              '--drRR--', #3
+              '-HD-H--m', #2
+              '--r-RCc-', #1
+              're---r--', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_amiga_vecina(t, Posicion(4, 0)))
+
+    def test_hay_pieza_amiga_y_enemiga_vecinas(self):
+        ''' Hay pieza amiga vecina y tambien pieza enemiga vecina.'''
+        t = leer_tablero([
+              'R-hRD-Rr', #7
+              'M----d--', #6
+              '-h-rrCR-', #5
+              'R-rcE---', #4
+              '--drRR--', #3
+              '-HD-H--m', #2
+              '--r-RCc-', #1
+              're---r--', #0
+              #01234567
+            ])
+        self.assertTrue(hay_pieza_amiga_vecina(t, Posicion(7, 3)))
+
+    def test_hay_pieza_vecina(self):
+        ''' No hay piezas vecinas.'''
+        t = leer_tablero([
+              'R-hRD-Rr', #7
+              'M----d--', #6
+              '-h-rrCR-', #5
+              'R-rcE---', #4
+              '--drRR--', #3
+              '-HD-H--m', #2
+              '--r-R-c-', #1
+              're---r--', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_amiga_vecina(t, Posicion(0, 5)))
 
 class test_hay_pieza_enemiga_mas_debil_hacia(unittest.TestCase):
 
     def test_hay_pieza_enemiga_mas_debil_hacia(self):
+        ''' Hay pieza enemiga mas debil hacia el oeste.'''
         t = leer_tablero([
               '--Hdm---', #7
               'r--HhC--', #6
@@ -407,15 +452,55 @@ class test_hay_pieza_enemiga_mas_debil_hacia(unittest.TestCase):
             ])
         self.assertTrue(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(1, 3), OESTE))
 
-    # mira hacia afuera del tablero
-    # una de la misma fuerza
-    # una si es mayor
-    # una que es aimga y mas debil
+    def test_hay_pieza_enemiga_misma_fuerza(self):
+        ''' Hay pieza enemiga con la misma fuerza hacia el este.'''
+        t = leer_tablero([
+              '--Hdm---', #7
+              'r--HhCc-', #6
+              'e---R-C-', #5
+              'ME--d---', #4
+              'h--RDcRr', #3
+              'R-R-r--r', #2
+              '-RRcrRD-', #1
+              '--r---rr', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(6, 5), ESTE))
 
+    def test_hay_pieza_amiga_mas_debil_norte(self):
+        ''' Hay pieza amiga mas debil hacia el norte.'''
+        t = leer_tablero([
+              '--Hdm---', #7
+              'r--HhC--', #6
+              'e---r-C-', #5
+              'ME--d---', #4
+              'h--RDcRr', #3
+              'R-R-r--r', #2
+              '-RRcrRD-', #1
+              '--r---rr', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(4, 4), NORTE))
+
+    def test_hacia_apunta_fuera_tablero(self):
+        ''' No hay pieza ni amiga ni enemiga porque apunta fuera del tablero.'''
+        t = leer_tablero([
+              '--Hdm---', #7
+              'r--HhC--', #6
+              'e---R-C-', #5
+              'ME--d---', #4
+              'h--RDcRr', #3
+              'R-R-r--r', #2
+              '-RRcrRD-', #1
+              '--r---rr', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(7, 7), NORTE))
 
 class test_hay_pieza_enemiga_mas_fuerte_vecina(unittest.TestCase):
 
     def test_hay_pieza_enemiga_mas_fuerte_vecina(self):
+        ''' Hay pieza enemiga mas fuerte vecina.'''
         t = leer_tablero([
               'R-e--mRr', #7
               '------dE', #6
@@ -429,13 +514,55 @@ class test_hay_pieza_enemiga_mas_fuerte_vecina(unittest.TestCase):
             ])
         self.assertTrue(hay_pieza_enemiga_mas_fuerte_vecina(t, Posicion(3, 1)))
 
-    # hay 
-    # no hay
-    # hay pero es amiga
+    def test_no_hay_pieza_enemiga_mas_fuerte_vecina(self):
+        ''' Hay pieza enemiga mas fuerte vecina.'''
+        t = leer_tablero([
+              'R-e--mRr', #7
+              '------dE', #6
+              'h--Rr-RR', #5
+              'c--R-C--', #4
+              '-rCHDrr-', #3
+              '----rc--', #2
+              'h-R-M-R-', #1
+              'rr-D-dH-', #0
+              #01234567
+            ])
+        self.assertTrue(hay_pieza_enemiga_mas_fuerte_vecina(t, Posicion(6, 6)))
+
+    def test_hay_pieza_enemiga_mas_debil_vecina(self):
+        ''' Hay pieza enemiga pero es mas debil.'''
+        t = leer_tablero([
+              'R-e--mRr', #7
+              '------dE', #6
+              'h--Rr-RR', #5
+              'c--R-C--', #4
+              '-rCHDrr-', #3
+              '----rc--', #2
+              'h-R-M-R-', #1
+              'rr-D-dH-', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_enemiga_mas_fuerte_vecina(t, Posicion(4, 3)))
+
+    def test_hay_pieza_amiga_mas_fuerte_vecina(self):
+        ''' Hay pieza mas fuerte, pero es amiga.'''
+        t = leer_tablero([
+              'R-e--mRr', #7
+              '-------E', #6
+              'h--Rr-RE', #5
+              'c--R-C--', #4
+              '-rCHDrr-', #3
+              '----rc--', #2
+              'h-R-M-R-', #1
+              'rr-D-dH-', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_enemiga_mas_fuerte_vecina(t, Posicion(5, 6)))
 
 class test_hay_pieza_congelada(unittest.TestCase):
 
     def test_hay_pieza_congelada(self):
+        ''' La pieza esta congelada.'''
         t = leer_tablero([
               '--d--H-D', #7
               '-hMc--r-', #6
@@ -449,9 +576,50 @@ class test_hay_pieza_congelada(unittest.TestCase):
             ])
         self.assertTrue(hay_pieza_congelada(t, Posicion(6, 1)))
 
-        # no hay pieza congelada porque hay amiga vecina
-        # no hay piesza congelada porque la enemiga es mas debil
-        # no hay pieza congelada porque no tiene vecinas
+    def test_no_hay_pieza_congelada_amiga_vecina(self):
+        ''' La pieza esta no esta congelada, porque tiene una pieza amiga vecina.'''
+        t = leer_tablero([
+              '--d--H-D', #7
+              '-hMc--r-', #6
+              '--r--C-H', #5
+              '--------', #4
+              '-CeD----', #3
+              '---R----', #2
+              'h-------', #1
+              'rE------', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_congelada(t, Posicion(0, 0)))
+
+    def test_no_hay_pieza_congelada_enemigo_debil(self):
+        ''' La pieza no esta congelada porque la eneimga vecina es mas debil.'''
+        t = leer_tablero([
+              '--d--H-D', #7
+              '-hMc--r-', #6
+              '--r--C-H', #5
+              '--------', #4
+              '-CeD----', #3
+              '---R----', #2
+              '--------', #1
+              'eH------', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_congelada(t, Posicion(0, 0)))
+
+    def test_no_hay_pieza_congelada_sin_vecinas(self):
+        ''' La pieza esta congelada.'''
+        t = leer_tablero([
+              '--d--H-D', #7
+              '-hMc--r-', #6
+              '--r--C-H', #5
+              '--------', #4
+              '-CeD----', #3
+              '---R----', #2
+              '--------', #1
+              '------r-', #0
+              #01234567
+            ])
+        self.assertFalse(hay_pieza_congelada(t, Posicion(0, 6)))
 
 #### Ejercicio 4
 
