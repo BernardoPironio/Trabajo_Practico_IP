@@ -403,7 +403,25 @@ def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
     Retruns:
         Devuelve el juego despues del movimiento, este juego esta bien formado.
     '''
-    raise Exception("No implementado")
+    j_inicial: Juego = j
+    j_final: Juego = j
+    if m.accion == MOVER_A_SECAS:
+        pass
+    elif m.accion == ARRASTRAR:
+        pass
+    elif m.accion == EMPUJAR:
+        pass
+
+    if j_inicial.pasos_consumidos + len(m.pasos) == MAX_PASOS:
+        j_final.turno = oponente(j_inicial.turno)
+        j_final.pasos_consumidos = 0
+    else:
+        j_final.turno = j_inicial.turno 
+        j_final.pasos_consumidos = j_inicial.pasos_consumidos + len(m.pasos) 
+        
+
+
+    return 0
 
 #### Ejercicio 7
 
