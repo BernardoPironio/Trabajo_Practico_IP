@@ -324,6 +324,8 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
         or len(m.pasos) + j.pasos_consumidos >= 4):                     # Pasos <= MAX_PASOS
         res: bool = False
 
+#me agarro la duda de algo. aca evalua si es conejo. suponete q es conejo, ve conejo, q no retrocede, y se saltea todo el resto por ser un elif, por ende no evalua ninguna de las acciones
+
     elif casilla_en_posicion(j.tablero,m.origen).figura == CONEJO:       # Si es conejo que se mueva solo para adelante
         if (casilla_en_posicion(j.tablero,m.origen).color == DORADO      # Conejo dorado no al sur
             and m.pasos[0] == SUR):
@@ -362,9 +364,9 @@ def sacarPieza (t: Tablero, pos: Posicion) -> Tablero:
 def activar_una_trampa (t: Tablero, pos: Posicion) -> Tablero:
     t1: Tablero = copiar_tablero(t)
     if casilla_en_posicion(t1,pos) == VACIA:
-        return t1
+        pass
     if hay_pieza_amiga_vecina (t1,pos):
-        return t1
+        pass
     if not hay_pieza_amiga_vecina (t1,pos):
         t1 = sacarPieza (t1,pos)
     return t1
@@ -390,38 +392,70 @@ def activar_trampas(t : Tablero) -> Tablero:
 #### Ejercicio 6
 
 def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
-    '''
-    Realiza el movimiento de una pieza, actualizando el juego, actualizando el tablero,
-    el turno y la cantidad de pasos consumidos.
-
-    PRE:
-        juego_bien_formado(j) ∧ movimeinto_bien_formado(m)
-        puede_realizar_movimiento(j, m)
+    """
+    Realiza el movimiento m sobre el juego j.
+    Decimos que ejecuta un movimiento si esque aplica los desplazamientos de las piezas según la acción del movimiento, elimina las piezas caídas en trampas y gestiona los pasos consumidos junto con el cambio de turno.
+    PRE: juego_bien_formado(j) ∧ movimiento_bien_formado(m) ∧ puede_realizar_movimiento(j, m)
     ARGS:
         j (Juego): El juego actual.
-        m (Movimiento): EL movimiento a realizar.
-    Retruns:
-        Devuelve el juego despues del movimiento, este juego esta bien formado.
-    '''
-    j_inicial: Juego = j
-    j_final: Juego = j
+        m (Movimiento): El movimiento a realizar.
+    Returns:
+        Juego: El juego actualizado después del movimiento.
+    """
+    # copio tablero
+    tablero_nuevo: Tablero = copiar_tablero(j.tablero)
+    origen: Posicion = m.origen
+
+   
+    # muevo a secas
     if m.accion == MOVER_A_SECAS:
-        pass
+        destino: Posicion = posicion_vecina_hacia(origen, m.pasos[0])
+        pieza: Casilla = casilla_en_posicion(tablero_nuevo, origen)
+        tablero_nuevo[origen.fila][origen.columna] = VACIA
+        tablero_nuevo[destino.fila][destino.columna] = pieza
+
+    # arrastro
     elif m.accion == ARRASTRAR:
-        pass
+        # moves a la casilla libre
+        destino_propio: Posicion = posicion_vecina_hacia(origen, m.pasos[0])
+        pieza_propia: Casilla = casilla_en_posicion(tablero_nuevo, origen)
+        tablero_nuevo[origen.fila][origen.columna] = VACIA
+        tablero_nuevo[destino_propio.fila][destino_propio.columna] = pieza_propia
+
+        # muevo la pieza contraria a la pos q libero
+        pos_enemigo: Posicion = posicion_vecina_hacia(origen, opuesta(m.pasos[1]))
+        pieza_enemiga: Casilla = casilla_en_posicion(tablero_nuevo, pos_enemigo)
+        tablero_nuevo[pos_enemigo.fila][pos_enemigo.columna] = VACIA
+        tablero_nuevo[origen.fila][origen.columna] = pieza_enemiga
+
+    # empujo
     elif m.accion == EMPUJAR:
-        pass
+        # pieza contraria a casilla vacia
+        pos_enemigo: Posicion = posicion_vecina_hacia(origen, m.pasos[0])
+        destino_enemigo: Posicion = posicion_vecina_hacia(pos_enemigo, m.pasos[1])
+        pieza_enemiga: Casilla = casilla_en_posicion(tablero_nuevo, pos_enemigo)
+        tablero_nuevo[pos_enemigo.fila][pos_enemigo.columna] = VACIA
+        tablero_nuevo[destino_enemigo.fila][destino_enemigo.columna] = pieza_enemiga
 
-    if j_inicial.pasos_consumidos + len(m.pasos) == MAX_PASOS:
-        j_final.turno = oponente(j_inicial.turno)
-        j_final.pasos_consumidos = 0
+        # muevo mi pieza a donde estaba la otra contraria 
+        pieza_propia: Casilla = casilla_en_posicion(tablero_nuevo, origen)
+        tablero_nuevo[origen.fila][origen.columna] = VACIA
+        tablero_nuevo[pos_enemigo.fila][pos_enemigo.columna] = pieza_propia
+
+    # activo trampas
+    tablero_final: Tablero = activar_trampas(tablero_nuevo)
+
+    # pasos + turno
+    pasos_totales: int = j.pasos_consumidos + len(m.pasos)
+
+    if pasos_totales == MAX_PASOS:
+        nuevo_turno: Color = oponente(j.turno)
+        nuevos_pasos: int = 0
     else:
-        j_final.turno = j_inicial.turno 
-        j_final.pasos_consumidos = j_inicial.pasos_consumidos + len(m.pasos) 
-        
+        nuevo_turno: Color = j.turno
+        nuevos_pasos: int = pasos_totales
 
-
-    return 0
+    return Juego(tablero_final, nuevo_turno, nuevos_pasos)
 
 #### Ejercicio 7
 
