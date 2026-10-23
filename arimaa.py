@@ -317,6 +317,7 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
     Returns:
         True si el movimiento se puede realizar; False de lo contrario.
     """
+    """
     res: bool = True
     if (hay_casilla_vacia(j.tablero,m.origen)                           # No hay vacia
         or (casilla_en_posicion(j.tablero, m.origen).color != j.turno)  # Color pieza == turno 
@@ -347,7 +348,38 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
                     and hay_casilla_vacia_hacia(j.tablero,posicion_vecina_hacia(m.origen,m.pasos[0]),m.pasos[1]))
 
     return res 
+    """
+# Agrego cómo podemos cambiarlo para que funcione    
     
+    res: bool = True
+    if (hay_casilla_vacia(j.tablero,m.origen)                           # No hay vacia
+        or (casilla_en_posicion(j.tablero, m.origen).color != j.turno)  # Color pieza == turno 
+        or hay_pieza_congelada(j.tablero,m.origen)                      # No esta congelada
+        or len(m.pasos) + j.pasos_consumidos >= 4):                     # Pasos <= MAX_PASOS
+        return False                                                    # Porque no interesa que evalúe lo que sigue y no funciona si es vacía
+
+    if casilla_en_posicion(j.tablero,m.origen).figura == CONEJO:       # Si es conejo que se mueva solo para adelante
+        if (casilla_en_posicion(j.tablero,m.origen).color == DORADO      # Conejo dorado no al sur
+            and m.pasos[0] == SUR):
+            res: bool = False                           
+        if (casilla_en_posicion(j.tablero,m.origen).color == PLATEADO    # Conejo plateado no al norte
+            and m.pasos[0] == NORTE):
+            res: bool = False
+
+    # Condiciones sobre las distintas acciones
+    if m.accion == MOVER_A_SECAS:
+        res: bool = res and hay_casilla_vacia_hacia(j.tablero,m.origen,m.pasos[0])
+
+    if m.accion == ARRASTRAR:
+        res: bool = res and (hay_casilla_vacia_hacia(j.tablero,m.origen,m.pasos[0])
+                    and hay_pieza_enemiga_mas_debil_hacia(j.tablero, m.origen, opuesta(m.pasos[1])))
+        
+    if m.accion == EMPUJAR:
+        res:bool = res and (hay_pieza_enemiga_mas_debil_hacia(j.tablero,m.origen,m.pasos[0])
+                    and hay_casilla_vacia_hacia(j.tablero,posicion_vecina_hacia(m.origen,m.pasos[0]),m.pasos[1]))
+
+    return res 
+
 #### Ejercicio 5
 
 def copiar_tablero (t: Tablero) -> Tablero:
@@ -365,9 +397,9 @@ def activar_una_trampa (t: Tablero, pos: Posicion) -> Tablero:
     t1: Tablero = copiar_tablero(t)
     if casilla_en_posicion(t1,pos) == VACIA:
         pass
-    if hay_pieza_amiga_vecina (t1,pos):
+    elif hay_pieza_amiga_vecina (t1,pos):
         pass
-    if not hay_pieza_amiga_vecina (t1,pos):
+    elif not hay_pieza_amiga_vecina (t1,pos):
         t1 = sacarPieza (t1,pos)
     return t1
 
@@ -459,9 +491,73 @@ def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
 
 #### Ejercicio 7
 
+# Función auxiliar para determinar si hay conejos en el tablero del color col
+def hayConejoEnTablero (j: Juego, col: Color) -> bool:
+    for fila in j.tablero:
+        for casilla in fila:
+            if casilla != VACIA and casilla.figura == CONEJO and casilla.color == col:
+                return True
+    return False
+
+# Función auxiliar para determinar si hay conejos de color col en la fila inicial del oponente
+
+def hayConejoEnFilaInicialOponente (j: Juego, col: Color) -> bool:
+    res: bool = False
+    if col == DORADO:
+        for casilla in j.tablero[7]:
+            if casilla != VACIA and casilla.figura == CONEJO and casilla.color == col:
+                res = True
+        
+    elif col == PLATEADO:
+        for casilla in j.tablero[0]:
+            if casilla != VACIA and casilla.figura == CONEJO and casilla.color == col:
+                res = True
+    return res
+
+# Función auxiliar que determina si tiene las condiciones de ganar
+def reuneCondicionesDeGanar (j: Juego, col: Color) -> bool:
+    return hayConejoEnFilaInicialOponente (j, col) or not hayConejoEnTablero (j, oponente(col))
+
 def hay_ganador_determinado(j : Juego) -> bool:
-    raise Exception("No implementado")
+    """
+    Determina si hay un ganador del juego.
+    
+    Decimos que tiene condiciones de ganar si cumple alguna de estas dos condiciones:
+        - Hay un conejo de su color en la fila inicial del oponente.
+        - No hay conejos en el tablero del color del oponente
+    
+    Un jugador gana en alguno de estos dos casos:
+        - Si es el turno de su oponente: gana si tiene las condiciones de ganar.
+        - Si es su turno: gana si tiene las condiciones de ganar y su oponente no las tiene.
+
+    PRE: 
+        juegoBienFormado (j)
+    ARGS:
+        j (Juego): El juego a partir del cual se va a determinar si hay un ganador.
+    Returns:
+        True si hay un ganador del juego.
+        False en caso contrario.
+    """
+    res: bool = False
+    if j.pasos_consumidos == 0 and reuneCondicionesDeGanar(j, oponente(j.turno)):
+        res = True
+    elif j.pasos_consumidos == 0 and reuneCondicionesDeGanar (j, j.turno) and not reuneCondicionesDeGanar(j,oponente(j.turno)):
+        res = True
+    return res
 
 def ganador_del_juego(j : Juego) -> Color:
-    raise Exception("No implementado")
+    """
+    Devuelve el color del ganador del juego.
 
+    PRE: 
+        juegoBienFormado (j) ∧ hayGanadorDeterminado (j) 
+    ARGS:
+        j (Juego): El juego a partir del cual ganó un jugador.
+    Returns:
+        El color del ganador del juego.
+    """
+
+    res: Color = oponente(j.turno)
+    if not reuneCondicionesDeGanar(j, oponente(j.turno)):
+        res = j.turno
+    return res

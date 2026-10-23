@@ -730,7 +730,7 @@ class test_puede_realizar_movimiento(unittest.TestCase):
         self.assertFalse(puede_realizar_movimiento(j,m))
 
     # TESTS SOBRE CONEJOS 
-    def test_no_pude_realizar_movimiento_conejo_plateado(self):
+    def test_no_puede_realizar_movimiento_conejo_plateado(self):
         ''' No puede realizar movimiento porque el conejo plateado no puede volver atras (NORTE)'''
         t = leer_tablero([
               '--eMr---', #7
@@ -747,8 +747,8 @@ class test_puede_realizar_movimiento(unittest.TestCase):
         m = Movimiento(MOVER_A_SECAS, Posicion(5, 6), [NORTE])
         self.assertFalse(puede_realizar_movimiento(j, m))
 
-    def test_no_pude_realizar_movimiento_conejo_dorado(self):
-        ''' No puede realizar movimiento porque el conejo dorado no puede volver atras (NORTE)'''
+    def test_no_puede_realizar_movimiento_conejo_dorado(self):
+        ''' No puede realizar movimiento porque el conejo dorado no puede volver atras (SUR)'''
         t = leer_tablero([
               '--eMr---', #7
               '--------', #6
@@ -764,6 +764,39 @@ class test_puede_realizar_movimiento(unittest.TestCase):
         m = Movimiento(MOVER_A_SECAS, Posicion(5, 6), [SUR])
         self.assertFalse(puede_realizar_movimiento(j, m))
 
+    def test_puede_realizar_movimiento_conejo_plateado(self):
+        ''' Puede realizar movimiento porque el conejo plateado puede ir hacia adelante (SUR)'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----r-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(5, 6), [SUR])
+        self.assertTrue(puede_realizar_movimiento(j, m))
+
+    def test_puede_realizar_movimiento_conejo_dorado(self):
+        ''' Puede realizar movimiento porque el conejo dorado puede ir hacia adelante (NORTE)'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----R-', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-mD--mDR', #0
+              #01234567
+            ])
+        j = Juego(t, DORADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(5, 6), [NORTE])
+        self.assertTrue(puede_realizar_movimiento(j, m))
     # TEST SOBRE LAS CONDICIONES DE LAS ACCIONES
     # MOVER A SECAS
     def test_mover_a_secas_invalido_pos_ocupada_enemiga(self):
@@ -1005,6 +1038,23 @@ class test_puede_realizar_movimiento(unittest.TestCase):
         j = Juego(t, PLATEADO, 0)
         m = Movimiento(EMPUJAR, Posicion(0, 6), [ESTE,ESTE])
         self.assertFalse(puede_realizar_movimiento(j, m))
+    
+    def test_empujar_invaido_empuja_fuera_tablero_conejo(self):
+        ''' La figura es un conejo y no puede empujar porque el empujado se sale del tablero.'''
+        t = leer_tablero([
+              '--eMr---', #7
+              '--------', #6
+              '-R----rR', #5
+              '--------', #4
+              '--mMd---', #3
+              '---D----', #2
+              '--------', #1
+              '-m---me-', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(5, 6), [ESTE,ESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
 
 #### Ejercicio 5
 
@@ -1162,8 +1212,9 @@ class test_realizar_movimiento(unittest.TestCase):
 #### Ejercicio 7
 
 class test_ganador_del_juego(unittest.TestCase):
-
+    
     def test_promueve_conejo_dorado_turno_del_oponente(self):
+        ''' Gana el jugador dorado en el turno del oponente por tener un conejo en la fila inicial de su oponente'''
         t = leer_tablero([
               'rr----Rr', #7
               'c-----me', #6
@@ -1178,6 +1229,95 @@ class test_ganador_del_juego(unittest.TestCase):
         j = Juego(t, PLATEADO, 0)
         self.assertTrue(hay_ganador_determinado(j))
         self.assertEqual(ganador_del_juego(j), DORADO)
+
+    def test_promueve_conejo_dorado_su_turno(self):
+        ''' Gana el jugador en su turno por tener un conejo en la fila inicial de su oponente
+        y el otro jugador no cumple las condiciones para ganar'''
+        t = leer_tablero([
+              'rr----Rr', #7
+              'c-----me', #6
+              '---Ed-R-', #5
+              '-M---R--', #4
+              '---R----', #3
+              '-rrrr---', #2
+              '-H---DCC', #1
+              'R-----RR', #0
+              #01234567
+            ])
+        j = Juego(t, DORADO, 0)
+        self.assertTrue(hay_ganador_determinado(j))
+        self.assertEqual(ganador_del_juego(j), DORADO)
+
+    def test_sin_conejos_plateados_turno_del_oponente(self):
+        ''' Gana el jugador dorado en su turno del oponente porque no hay más conejos plateados'''
+        t = leer_tablero([
+              '--------', #7
+              'c-----me', #6
+              '---Ed-R-', #5
+              '-M---R--', #4
+              '---R----', #3
+              '--------', #2
+              '-H---DCC', #1
+              'R-R---RR', #0
+              #01234567
+            ])
+        j = Juego(t, PLATEADO, 0)
+        self.assertTrue(hay_ganador_determinado(j))
+        self.assertEqual(ganador_del_juego(j), DORADO)
+
+    def test_sin_conejos_plateados_su_turno(self):
+            ''' Gana el jugador dorado en el turno del oponente porque no hay más conejos plateados
+             y el otro jugador no cumple las condiciones para ganar'''
+            t = leer_tablero([
+                  '--------', #7
+                  'c-----me', #6
+                  '---Ed-R-', #5
+                  '-M---R--', #4
+                  '---R----', #3
+                  '--------', #2
+                  '-H---DCC', #1
+                  'R-R---RR', #0
+                  #01234567
+                ])
+            j = Juego(t, DORADO, 0)
+            self.assertTrue(hay_ganador_determinado(j))
+            self.assertEqual(ganador_del_juego(j), DORADO)
+
+    def test_sin_ganador(self):
+            ''' No hay ganador porque ninguno cumple'''
+            t = leer_tablero([
+                  'rr----rr', #7
+                  'c-----me', #6
+                  '---Ed-R-', #5
+                  '-M---R--', #4
+                  '---R----', #3
+                  '-rrrr---', #2
+                  '-H---DCC', #1
+                  'R----RRR', #0
+                  #01234567
+                ])
+            
+            j = Juego(t, DORADO, 0)
+            self.assertFalse(hay_ganador_determinado(j))
+    
+    def test_cumplen_los_dos(self):
+                ''' Gana el oponente porque cumplen los dos'''
+                t = leer_tablero([
+                      '-------R', #7
+                      'c-----me', #6
+                      '---Ed-R-', #5
+                      '-M---R--', #4
+                      '---R----', #3
+                      '--rrr---', #2
+                      '-H---DCC', #1
+                      'r-------', #0
+                      #01234567
+                    ])
+                
+                j = Juego(t, DORADO, 0)
+                self.assertTrue(hay_ganador_determinado(j))
+                self.assertEqual(ganador_del_juego(j), PLATEADO)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2) 
