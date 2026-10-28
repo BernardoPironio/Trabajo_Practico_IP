@@ -63,8 +63,7 @@ def movimiento_bien_formado(m : Movimiento) -> bool:
         pasos_correctos: bool = len(m.pasos) == 1 
     elif m.accion in (ARRASTRAR,EMPUJAR):
         pasos_correctos: bool = len(m.pasos) == 2
-    else:
-        pasos_correctos: bool = False
+
     return pasos_correctos and posicion_en_tablero(m.origen)
 
 def juego_bien_formado(j : Juego) -> bool:
