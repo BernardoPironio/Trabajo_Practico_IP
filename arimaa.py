@@ -317,45 +317,11 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
     Returns:
         True si el movimiento se puede realizar; False de lo contrario.
     """
-    """
     res: bool = True
     if (hay_casilla_vacia(j.tablero,m.origen)                           # No hay vacia
         or (casilla_en_posicion(j.tablero, m.origen).color != j.turno)  # Color pieza == turno 
         or hay_pieza_congelada(j.tablero,m.origen)                      # No esta congelada
-        or len(m.pasos) + j.pasos_consumidos >= 4):                     # Pasos <= MAX_PASOS
-        res: bool = False
-
-#me agarro la duda de algo. aca evalua si es conejo. suponete q es conejo, ve conejo, q no retrocede, y se saltea todo el resto por ser un elif, por ende no evalua ninguna de las acciones
-
-    elif casilla_en_posicion(j.tablero,m.origen).figura == CONEJO:       # Si es conejo que se mueva solo para adelante
-        if (casilla_en_posicion(j.tablero,m.origen).color == DORADO      # Conejo dorado no al sur
-            and m.pasos[0] == SUR):
-            res: bool = False                           
-        if (casilla_en_posicion(j.tablero,m.origen).color == PLATEADO    # Conejo plateado no al norte
-            and m.pasos[0] == NORTE):
-            res: bool = False
-
-    # Condiciones sobre las distintas acciones
-    elif m.accion == MOVER_A_SECAS:
-        res: bool = hay_casilla_vacia_hacia(j.tablero,m.origen,m.pasos[0])
-
-    elif m.accion == ARRASTRAR:
-        res: bool = (hay_casilla_vacia_hacia(j.tablero,m.origen,m.pasos[0])
-                    and hay_pieza_enemiga_mas_debil_hacia(j.tablero, m.origen, opuesta(m.pasos[1])))
-        
-    elif m.accion == EMPUJAR:
-        res:bool = (hay_pieza_enemiga_mas_debil_hacia(j.tablero,m.origen,m.pasos[0])
-                    and hay_casilla_vacia_hacia(j.tablero,posicion_vecina_hacia(m.origen,m.pasos[0]),m.pasos[1]))
-
-    return res 
-    """
-# Agrego cómo podemos cambiarlo para que funcione    
-    
-    res: bool = True
-    if (hay_casilla_vacia(j.tablero,m.origen)                           # No hay vacia
-        or (casilla_en_posicion(j.tablero, m.origen).color != j.turno)  # Color pieza == turno 
-        or hay_pieza_congelada(j.tablero,m.origen)                      # No esta congelada
-        or len(m.pasos) + j.pasos_consumidos >= 4):                     # Pasos <= MAX_PASOS
+        or len(m.pasos) + j.pasos_consumidos > 4):                      # Pasos <= MAX_PASOS
         return False                                                    # Porque no interesa que evalúe lo que sigue y no funciona si es vacía
 
     if casilla_en_posicion(j.tablero,m.origen).figura == CONEJO:       # Si es conejo que se mueva solo para adelante

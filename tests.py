@@ -708,7 +708,7 @@ class test_puede_realizar_movimiento(unittest.TestCase):
               '-mD--mDR', #0
               #01234567
             ])
-        j = Juego(t, PLATEADO, 1)
+        j = Juego(t, PLATEADO, 2)
         m = Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE,NORTE,NORTE])
         self.assertFalse(puede_realizar_movimiento(j, m)) 
 
