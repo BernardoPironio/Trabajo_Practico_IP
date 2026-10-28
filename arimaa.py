@@ -188,11 +188,7 @@ def hay_pieza(t: Tablero, pos: Posicion) -> bool:
         True si es que hay una figura dorada o plateada.
         False de lo contrario.
     """
-    res: bool = True
-    if hay_casilla_vacia(t,pos):
-        res: bool = False
-
-    return res
+    return not hay_casilla_vacia(t,pos)
 
 def hay_pieza_amiga_vecina(t: Tablero, pos: Posicion) -> bool:
     """
