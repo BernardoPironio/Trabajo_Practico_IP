@@ -155,27 +155,27 @@ def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
 
 def hay_casilla_vacia_hacia(t: Tablero, pos: Posicion, d: Direccion) -> bool:
     """
-    Determina si la casilla en la direccion d, respecto de la posicion pos esta vacia.
+    Determina si la casilla en la dirección d, respecto de la posición pos esta vacía.
 
     PRE: 
         tablero_bien_formado(t) ∧ posición_en_tablero(pos).
     ARGS:
         t (Tablero): El tablero actual.
-        pos (Posición): Posicion a verificar si existen casillas vacias en alguna direccion.
-        d (Dirección): La direccion a verificar.
+        pos (Posición): Posición a verificar si existen casillas vacías en alguna dirección.
+        d (Dirección): La dirección a verificar.
     Returns:
-        True si la casilla en la direccion d, respecto de la posicion pos, esta vacia; False de lo contrario.
+        True si la casilla en la dirección d, respecto de la posicion pos, está vacía; False de lo contrario.
     """
     res: bool = False
-    pos_prima: Posicion = posicion_vecina_hacia(pos, d)
-    if posicion_en_tablero(pos_prima):
-        res: bool = hay_casilla_vacia(t, pos_prima)
+    pos_vecina: Posicion = posicion_vecina_hacia(pos, d)
+    if posicion_en_tablero(pos_vecina):
+        res = hay_casilla_vacia(t, pos_vecina)
     return res
 
 # Esta funcion aux la vamos a dejar porque se puede utilizar en muchos ejericios.
 def hay_pieza(t: Tablero, pos: Posicion) -> bool:
     """
-    Vamos a determinar si en la posicion pos del tablero t hay una figura, sea esta DORADA o PLATEADA.
+    Vamos a determinar si en la posición pos del tablero t hay una figura, sea esta DORADA o PLATEADA.
 
     PRE: 
         tablero_bien_formado(t) ∧ posición_en_tablero(pos).
@@ -216,7 +216,7 @@ def hay_pieza_amiga_vecina(t: Tablero, pos: Posicion) -> bool:
 
 def hay_pieza_enemiga_mas_debil_hacia(t: Tablero, pos: Posicion, d: Direccion) -> bool:
     """
-    Determina si en la direccion d adyacente a la posicion pos se encuentra una pieza enemiga 
+    Determina si en la dirección d adyacente a la posición pos se encuentra una pieza enemiga 
     cuya fuerza sea estrictamente menor que la de la pieza en pos.
 
     PRE: 
@@ -226,20 +226,20 @@ def hay_pieza_enemiga_mas_debil_hacia(t: Tablero, pos: Posicion, d: Direccion) -
         pos (Posición): La posición de la pieza atacante/origen.
         d (Dirección): La dirección a verificar.
     Returns:
-        True si hay una pieza enemiga adyacente mas debil en la direccion d;
+        True si hay una pieza enemiga adyacente mas débil en la dirección d;
         False en caso contrario.
     """
     res: bool = False
     pos_vecina: Posicion = posicion_vecina_hacia(pos, d)
 
-    if posicion_en_tablero(pos_vecina) and not hay_casilla_vacia(t, pos_vecina):
+    if posicion_en_tablero(pos_vecina) and hay_pieza (t, pos_vecina):
         pieza_actual: Casilla = casilla_en_posicion(t, pos)
         pieza_vecina: Casilla = casilla_en_posicion(t, pos_vecina)
 
         es_enemigo: bool = pieza_vecina.color == oponente(pieza_actual.color)
         es_mas_debil: bool = fuerza(pieza_vecina.figura) < fuerza(pieza_actual.figura)
 
-        res: bool = es_enemigo and es_mas_debil
+        res = es_enemigo and es_mas_debil
 
     return res
 
@@ -262,7 +262,7 @@ def hay_pieza_enemiga_mas_fuerte_vecina(t: Tablero, pos: Posicion) -> bool:
     for d in [NORTE, SUR, ESTE, OESTE]:
         pos_vecina: Posicion = posicion_vecina_hacia(pos, d)
 
-        if posicion_en_tablero(pos_vecina) and not hay_casilla_vacia(t, pos_vecina):
+        if posicion_en_tablero(pos_vecina) and hay_pieza(t, pos_vecina):
             pieza_vecina: Casilla = casilla_en_posicion(t, pos_vecina)
 
             es_enemigo: bool = pieza_vecina.color == oponente(pieza_actual.color)
@@ -277,7 +277,7 @@ def hay_pieza_congelada(t: Tablero, pos: Posicion) -> bool:
     """
     Determina si la pieza en pos se encuentra congelada.
     Decimos que una pieza esta congelada si existe una pieza en pos, tiene al menos una pieza enemiga
-    mas fuerte vecina y no tiene ninguna pieza amiga vecina.
+    ma2s fuerte vecina y no tiene ninguna pieza amiga vecina.
 
     PRE:
         tablero_bien_formado(t) ∧ posición_en_tablero(pos).
@@ -290,7 +290,7 @@ def hay_pieza_congelada(t: Tablero, pos: Posicion) -> bool:
     res: bool = False
 
     if hay_pieza(t, pos) and hay_pieza_enemiga_mas_fuerte_vecina(t, pos) and not hay_pieza_amiga_vecina(t, pos):
-        res: bool = True
+        res = True
 
     return res
 
@@ -438,18 +438,16 @@ def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
     # activo trampas
     tablero_final: Tablero = activar_trampas(tablero_nuevo)
 
-    # pasos + turno
-    pasos_totales: int = j.pasos_consumidos + len(m.pasos)
+    # Actualizo los pasos y el turno
+    nuevos_pasos: int = j.pasos_consumidos + len(m.pasos)
+    nuevo_turno: Color = j.turno
 
-    if pasos_totales == MAX_PASOS:
-        nuevo_turno: Color = oponente(j.turno)
-        nuevos_pasos: int = 0
-    else:
-        nuevo_turno: Color = j.turno
-        nuevos_pasos: int = pasos_totales
+    if nuevos_pasos == MAX_PASOS:
+        nuevo_turno = oponente(j.turno)
+        nuevos_pasos = 0
 
     return Juego(tablero_final, nuevo_turno, nuevos_pasos)
-
+   
 #### Ejercicio 7
 
 # Función auxiliar para determinar si hay conejos en el tablero del color col

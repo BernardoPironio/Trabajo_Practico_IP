@@ -1181,9 +1181,7 @@ class test_activar_trampas(unittest.TestCase):
 class test_realizar_movimiento(unittest.TestCase):
 
     def test_mover_a_secas_sin_cambio_de_turno(self):
-        '''
-        Mueve un conejo dorado un paso al norte sin llegar a los 4 pasos totales.
-        '''
+        '''Mueve un conejo dorado un paso al norte sin llegar a los 4 pasos totales.'''
         t = leer_tablero([
             '--------',  # 7
             '--------',  # 6
@@ -1204,9 +1202,7 @@ class test_realizar_movimiento(unittest.TestCase):
         self.assertEqual(realizar_movimiento(j, m).pasos_consumidos, 1)
 
     def test_mover_a_secas_con_cambio_de_turno(self):
-        '''
-        Al llegar a 4 pasos consumidos (3 y 1), cambia el turno al oponente y reinicia los pasos.
-        '''
+        '''Al llegar a 4 pasos consumidos (3 y 1), cambia el turno al oponente y se reinician los pasos.'''
         t = leer_tablero([
             '--------',  # 7
             '--------',  # 6
@@ -1227,9 +1223,7 @@ class test_realizar_movimiento(unittest.TestCase):
         self.assertEqual(realizar_movimiento(j, m).pasos_consumidos, 0)
 
     def test_arrastrar_sin_cambio_de_turno(self):
-        '''
-        Elefante dorado se mueve al norte y arrastra al conejo plateado hacia el este .
-        '''
+        '''El Elefante dorado se mueve al norte y arrastra al conejo plateado hacia el este .'''
         t = leer_tablero([
             '--------',  # 7
             '--------',  # 6
@@ -1251,9 +1245,7 @@ class test_realizar_movimiento(unittest.TestCase):
         self.assertEqual(realizar_movimiento(j, m).pasos_consumidos, 2)
 
     def test_arrastrar_con_cambio_de_turno(self):
-        '''
-        Arrastrar teniendo 2 pasos consumidos (2 y 2 = 4) cambia el turno al rival.
-        '''
+        '''Arrastrar una pieza teniendo 2 pasos consumidos (2 y 2 = 4) cambia el turno al rival.'''
         t = leer_tablero([
             '--------',  # 7
             '--------',  # 6
@@ -1274,9 +1266,7 @@ class test_realizar_movimiento(unittest.TestCase):
         self.assertEqual(realizar_movimiento(j, m).pasos_consumidos, 0)
 
     def test_empujar_sin_cambio_de_turno(self):
-        '''
-        Elefante dorado empuja al conejo plateado al este ocupando su lugar.
-        '''
+        ''' El elefante dorado empuja al conejo plateado al este ocupando su lugar.'''
         t = leer_tablero([
             '--------',  # 7
             '--------',  # 6
@@ -1298,9 +1288,7 @@ class test_realizar_movimiento(unittest.TestCase):
         self.assertEqual(realizar_movimiento(j, m).pasos_consumidos, 2)
 
     def test_empujar_con_cambio_de_turno(self):
-        '''
-        Empujar teniendo 2 pasos consumidos (2 y 2 = 4) cambia el turno al rival.
-        '''
+        '''Empujar una pieza teniendo 2 pasos consumidos (2 y 2 = 4) cambia el turno al rival.'''
         t = leer_tablero([
             '--------',  # 7
             '--------',  # 6
@@ -1322,9 +1310,7 @@ class test_realizar_movimiento(unittest.TestCase):
         self.assertEqual(realizar_movimiento(j, m).pasos_consumidos, 0)
 
     def test_caer_en_trampa_sin_aliado_elimina_pieza(self):
-        '''
-        Pieza cae en la trampa (2,2) sin aliados adyacentes y la trampa la elimina.
-        '''
+        '''Pieza cae en la trampa (2,2) sin aliados adyacentes y la trampa la elimina.'''
         t = leer_tablero([
             '--------',  # 7
             '--------',  # 6
@@ -1343,9 +1329,7 @@ class test_realizar_movimiento(unittest.TestCase):
         self.assertEqual(realizar_movimiento(j, m).tablero[2][2], VACIA)
 
     def test_caer_en_trampa_con_aliado_sobrevive(self):
-        '''
-        Pieza cae en trampa (2,2) pero sobrevive por tener un perro aliado en (3,2).
-        '''
+        ''' Una Pieza cae en trampa (2,2) pero sobrevive por tener un perro aliado en (3,2) posición adyacente. '''
         t = leer_tablero([
             '--------',  # 7
             '--------',  # 6
@@ -1364,9 +1348,7 @@ class test_realizar_movimiento(unittest.TestCase):
         self.assertEqual(realizar_movimiento(j, m).tablero[2][2], Pieza(CONEJO, DORADO))
 
     def test_empujar_enemigo_a_trampa_lo_elimina(self):
-        '''
-        Empujar a un enemigo a la trampa (2,2) sin aliados lo elimina del tablero.
-        '''
+        '''Empujar a un enemigo a la trampa (2,2) sin aliados lo elimina del tablero. '''
         t = leer_tablero([
             '--------',  # 7
             '--------',  # 6
