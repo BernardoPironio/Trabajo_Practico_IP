@@ -61,7 +61,7 @@ def movimiento_bien_formado(m : Movimiento) -> bool:
     '''
     if m.accion == MOVER_A_SECAS:
         pasos_correctos: bool = len(m.pasos) == 1 
-    elif m.accion in (ARRASTRAR,EMPUJAR):
+    else:
         pasos_correctos: bool = len(m.pasos) == 2
 
     return pasos_correctos and posicion_en_tablero(m.origen)
@@ -97,7 +97,7 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
         res = Posicion(pos.fila - 1,pos.columna)
     elif d == ESTE:
         res = Posicion(pos.fila,pos.columna + 1)
-    elif d == OESTE:
+    else:
         res = Posicion(pos.fila,pos.columna - 1) 
 
     return res
@@ -417,7 +417,7 @@ def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
         tablero_nuevo[origen.fila][origen.columna] = pieza_enemiga
 
     # Empujo
-    elif m.accion == EMPUJAR:
+    else:
         # Pieza enemiga a casilla vacia
         pos_enemigo: Posicion = posicion_vecina_hacia(origen, m.pasos[0])
         destino_enemigo: Posicion = posicion_vecina_hacia(pos_enemigo, m.pasos[1])
@@ -462,7 +462,7 @@ def hay_conejo_en_fila_inicial_oponente (j: Juego, col: Color) -> bool:
             if casilla != VACIA and casilla.figura == CONEJO and casilla.color == col:
                 res = True
         
-    elif col == PLATEADO:
+    else:
         for casilla in j.tablero[0]:
             if casilla != VACIA and casilla.figura == CONEJO and casilla.color == col:
                 res = True
