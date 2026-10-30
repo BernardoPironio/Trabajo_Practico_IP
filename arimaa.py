@@ -25,7 +25,7 @@ def pasar_turno(j : Juego) -> Juego: # pragma: no cover
 def tablero_bien_formado(t : Tablero) -> bool:
     ''' 
     Determina si el tablero t esta bien formado.
-    Decimos que un tablero t es valido si tiene un ancho y largo de 7 casillas.
+    Decimos que un tablero t es valido si tiene un ancho y largo de 7 casillas (contando desde el 0).
 
     ARGS: 
         t (Tablero): El tablero que se desea verificar.
@@ -40,12 +40,12 @@ def tablero_bien_formado(t : Tablero) -> bool:
 
 def posicion_en_tablero(pos : Posicion) -> bool:
     ''' 
-    Determina si la posicion pos pertenece al tablero. 
+    Determina si la posición pos pertenece al tablero. 
 
     ARGS: 
-        pos (Posicion): La posicion que se desea verificar.
+        pos (Posición): La posición que se desea verificar.
     Returns: 
-        True si la posicion esta en el tablero; False de lo contrario.
+        True si la posición esta en el tablero; False de lo contrario.
     '''
     return (0 <= pos.fila < ALTO) and (0 <= pos.columna < ANCHO)
     
@@ -57,7 +57,7 @@ def movimiento_bien_formado(m : Movimiento) -> bool:
     ARGS: 
         m (Movimiento): El movimiento que se desea verificar.
     Returns: 
-        True si es un movimiento valido; False de lo contrario.
+        True si es un movimiento válido; False de lo contrario.
     '''
     if m.accion == MOVER_A_SECAS:
         pasos_correctos: bool = len(m.pasos) == 1 
@@ -69,7 +69,7 @@ def movimiento_bien_formado(m : Movimiento) -> bool:
 def juego_bien_formado(j : Juego) -> bool:
     ''' 
     Determina si el juego j esta bien formado. 
-    Decimos que un juego esta bien formado si el tablero del juego esta bien formado y la cantidad de pasos consumidos es mayor a cero y no supera el maximo.
+    Decimos que un juego está   bien formado si el tablero del juego esta bien formado y la cantidad de pasos consumidos es mayor o igual a cero y no supera el maximo.
     
     ARGS: 
         j (Juego): El juego que se desea verificar.
@@ -102,7 +102,7 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
 
     return res
 
-def casilla_en_posicion(t: Tablero, p: Posicion) -> Casilla:
+def casilla_en_posicion(t: Tablero, pos: Posicion) -> Casilla:
     """
     Devuelve la casilla del tablero t que está ubicada en la posición pos.
 
@@ -114,7 +114,7 @@ def casilla_en_posicion(t: Tablero, p: Posicion) -> Casilla:
     Returns: 
         VACÍA si la casilla en esa posición es un espacio vacío o una pieza si está ocupada.
     """
-    res: Casilla = t[p.fila][p.columna]
+    res: Casilla = t[pos.fila][pos.columna]
     return res
 
 def hay_casilla_vacia(t: Tablero, pos: Posicion) -> bool:
@@ -349,19 +349,15 @@ def copiar_tablero (t: Tablero) -> Tablero:
         copia.append(elemento.copy())
     return copia
 
-def sacarPieza (t: Tablero, pos: Posicion) -> Tablero:
+def sacar_pieza (t: Tablero, pos: Posicion) -> Tablero:
     t1: Tablero = copiar_tablero(t)
     t1[pos.fila][pos.columna] = VACIA
     return t1
 
 def activar_una_trampa (t: Tablero, pos: Posicion) -> Tablero:
     t1: Tablero = copiar_tablero(t)
-    if casilla_en_posicion(t1,pos) == VACIA:
-        pass
-    elif hay_pieza_amiga_vecina (t1,pos):
-        pass
-    elif not hay_pieza_amiga_vecina (t1,pos):
-        t1 = sacarPieza (t1,pos)
+    if casilla_en_posicion(t1, pos) != VACIA and not hay_pieza_amiga_vecina(t1, pos):
+        t1 = sacar_pieza(t1, pos)
     return t1
 
 def activar_trampas(t : Tablero) -> Tablero:
@@ -395,12 +391,11 @@ def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
     Returns:
         Juego: El juego actualizado después del movimiento.
     """
-    # copio tablero
     tablero_nuevo: Tablero = copiar_tablero(j.tablero)
     origen: Posicion = m.origen
 
    
-    # muevo a secas
+    # Muevo a secas
     if m.accion == MOVER_A_SECAS:
         destino: Posicion = posicion_vecina_hacia(origen, m.pasos[0])
         pieza: Casilla = casilla_en_posicion(tablero_nuevo, origen)
@@ -409,28 +404,28 @@ def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
 
     # arrastro
     elif m.accion == ARRASTRAR:
-        # moves a la casilla libre
+        # Muevo a la casilla libre
         destino_propio: Posicion = posicion_vecina_hacia(origen, m.pasos[0])
         pieza_propia: Casilla = casilla_en_posicion(tablero_nuevo, origen)
         tablero_nuevo[origen.fila][origen.columna] = VACIA
         tablero_nuevo[destino_propio.fila][destino_propio.columna] = pieza_propia
 
-        # muevo la pieza contraria a la pos q libero
+        # Muevo la pieza contraria a la pos que libero
         pos_enemigo: Posicion = posicion_vecina_hacia(origen, opuesta(m.pasos[1]))
         pieza_enemiga: Casilla = casilla_en_posicion(tablero_nuevo, pos_enemigo)
         tablero_nuevo[pos_enemigo.fila][pos_enemigo.columna] = VACIA
         tablero_nuevo[origen.fila][origen.columna] = pieza_enemiga
 
-    # empujo
+    # Empujo
     elif m.accion == EMPUJAR:
-        # pieza contraria a casilla vacia
+        # Pieza enemiga a casilla vacia
         pos_enemigo: Posicion = posicion_vecina_hacia(origen, m.pasos[0])
         destino_enemigo: Posicion = posicion_vecina_hacia(pos_enemigo, m.pasos[1])
         pieza_enemiga: Casilla = casilla_en_posicion(tablero_nuevo, pos_enemigo)
         tablero_nuevo[pos_enemigo.fila][pos_enemigo.columna] = VACIA
         tablero_nuevo[destino_enemigo.fila][destino_enemigo.columna] = pieza_enemiga
 
-        # muevo mi pieza a donde estaba la otra contraria 
+        # Muevo mi pieza a donde estaba la otra contraria 
         pieza_propia: Casilla = casilla_en_posicion(tablero_nuevo, origen)
         tablero_nuevo[origen.fila][origen.columna] = VACIA
         tablero_nuevo[pos_enemigo.fila][pos_enemigo.columna] = pieza_propia
@@ -451,7 +446,7 @@ def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
 #### Ejercicio 7
 
 # Función auxiliar para determinar si hay conejos en el tablero del color col
-def hayConejoEnTablero (j: Juego, col: Color) -> bool:
+def hay_conejo_en_tablero (j: Juego, col: Color) -> bool:
     for fila in j.tablero:
         for casilla in fila:
             if casilla != VACIA and casilla.figura == CONEJO and casilla.color == col:
@@ -460,7 +455,7 @@ def hayConejoEnTablero (j: Juego, col: Color) -> bool:
 
 # Función auxiliar para determinar si hay conejos de color col en la fila inicial del oponente
 
-def hayConejoEnFilaInicialOponente (j: Juego, col: Color) -> bool:
+def hay_conejo_en_fila_inicial_oponente (j: Juego, col: Color) -> bool:
     res: bool = False
     if col == DORADO:
         for casilla in j.tablero[7]:
@@ -474,8 +469,8 @@ def hayConejoEnFilaInicialOponente (j: Juego, col: Color) -> bool:
     return res
 
 # Función auxiliar que determina si tiene las condiciones de ganar
-def reuneCondicionesDeGanar (j: Juego, col: Color) -> bool:
-    return hayConejoEnFilaInicialOponente (j, col) or not hayConejoEnTablero (j, oponente(col))
+def reune_condiciones_de_ganar (j: Juego, col: Color) -> bool:
+    return hay_conejo_en_fila_inicial_oponente (j, col) or not hay_conejo_en_tablero (j, oponente(col))
 
 def hay_ganador_determinado(j : Juego) -> bool:
     """
@@ -498,9 +493,9 @@ def hay_ganador_determinado(j : Juego) -> bool:
         False en caso contrario.
     """
     res: bool = False
-    if j.pasos_consumidos == 0 and reuneCondicionesDeGanar(j, oponente(j.turno)):
+    if j.pasos_consumidos == 0 and reune_condiciones_de_ganar(j, oponente(j.turno)):
         res = True
-    elif j.pasos_consumidos == 0 and reuneCondicionesDeGanar (j, j.turno) and not reuneCondicionesDeGanar(j,oponente(j.turno)):
+    elif j.pasos_consumidos == 0 and reune_condiciones_de_ganar (j, j.turno) and not reune_condiciones_de_ganar(j,oponente(j.turno)):
         res = True
     return res
 
@@ -517,6 +512,6 @@ def ganador_del_juego(j : Juego) -> Color:
     """
 
     res: Color = oponente(j.turno)
-    if not reuneCondicionesDeGanar(j, oponente(j.turno)):
+    if not reune_condiciones_de_ganar(j, oponente(j.turno)):
         res = j.turno
     return res
